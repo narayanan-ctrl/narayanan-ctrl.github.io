@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Editorial 2026 — Spotify</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#181818;--surface:#2E2E2E;--surface2:#3A3A3A;--surface3:#484848;
+  --green:#1DB954;--white:#FFFFFF;--muted:#CCCCCC;
+  --sidebar-w:240px;--topbar-h:64px;--player-h:90px;
+  --gold:#FFD700;--teal:#00a3a3;--purple:#9400D3;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Figtree',-apple-system,sans-serif;background:#000;color:var(--white);font-size:15px;line-height:1.6}
+
+/* ── APP SHELL ── */
+.app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:1fr var(--player-h);height:100vh;gap:8px;padding:8px;padding-bottom:0}
+
+/* ── SIDEBAR ── */
+.sidebar{grid-row:1;background:var(--bg);border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
+.sidebar-top{padding:16px 12px 8px}
+.brand-area{display:flex;align-items:center;gap:10px;padding:8px 12px 16px}
+.brand-logo{width:34px;height:34px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-logo svg{fill:#000;width:20px;height:20px}
+.brand-name{font-size:15px;font-weight:800;letter-spacing:.02em;color:var(--white)}
+.brand-sub{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.nav-item{display:flex;align-items:center;gap:16px;padding:8px 12px;border-radius:4px;cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;transition:color .1s}
+.nav-item:hover{color:var(--white)}
+.nav-item.active{color:var(--white)}
+.nav-item svg{width:24px;height:24px;fill:currentColor;flex-shrink:0}
+.sidebar-library{flex:1;background:var(--bg);border-radius:8px;margin:8px;overflow-y:auto;overflow-x:hidden}
+.sidebar-library::-webkit-scrollbar{width:4px}
+.sidebar-library::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px}
+.library-header{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px}
+.library-header span{font-weight:700;font-size:15px;color:var(--muted);cursor:pointer;transition:color .1s}
+.library-header span:hover{color:var(--white)}
+.library-divider{height:1px;background:var(--surface2);margin:4px 16px}
+.lib-item{display:flex;align-items:center;gap:12px;padding:8px 16px;border-radius:4px;cursor:pointer;transition:background .1s}
+.lib-item:hover{background:var(--surface2)}
+.lib-item.active{background:var(--surface2)}
+.lib-item-art{width:48px;height:48px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+.lib-item-info{overflow:hidden}
+.lib-item-name{font-weight:600;font-size:14px;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-item-sub{font-size:12px;color:#A8A8A8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+
+/* ── MAIN AREA ── */
+.main-area{grid-row:1;background:var(--bg);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.topbar{position:absolute;top:0;left:0;right:0;height:var(--topbar-h);display:flex;align-items:center;padding:0 24px;z-index:100;background:transparent;transition:background .3s}
+.topbar.scrolled{background:rgba(18,18,18,.95);backdrop-filter:blur(10px)}
+.topbar-nav{display:flex;gap:8px}
+.topbar-btn{background:rgba(0,0,0,.7);border:none;color:var(--white);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .1s}
+.topbar-btn:hover{background:rgba(255,255,255,.1)}
+.topbar-btn svg{width:16px;height:16px;fill:currentColor}
+.topbar-title{flex:1;text-align:center;font-size:13px;font-weight:600;color:var(--muted);opacity:0;transition:opacity .3s}
+.topbar-title.visible{opacity:1}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1DB954,#191414);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;cursor:pointer}
+.topbar-username{font-size:14px;font-weight:700;cursor:pointer}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+.section{display:none}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.section.active{animation:fadeIn .3s ease forwards}
+
+/* ── SECTION HEADER ── */
+.section-header{padding:80px 24px 32px;position:relative;min-height:200px;display:flex;flex-direction:column;justify-content:flex-end}
+.section-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,var(--bg));pointer-events:none}
+.section-header h1{font-size:52px;font-weight:900;line-height:1;letter-spacing:-1.5px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.section-header .h1-sub{font-size:18px;font-weight:600;color:var(--green);margin-top:6px;letter-spacing:-.2px}
+.section-header p{color:var(--white);font-size:15px;margin-top:10px;font-weight:400;max-width:520px;line-height:1.65;opacity:.82}
+.section-body{padding:0 24px 40px;position:relative;z-index:1}
+
+/* ── EMBED ── */
+.embed-wrap{margin-bottom:28px}
+.embed-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+.embed-label::before{content:'';width:3px;height:14px;background:var(--green);border-radius:2px;flex-shrink:0}
+.embed-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ── SECTION LABELS ── */
+.section-label{font-size:22px;font-weight:700;margin-bottom:20px}
+.section-sublabel{font-size:13px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-sublabel::before{content:'';width:20px;height:2px;background:var(--green)}
+.section-gap{height:32px}
+
+/* ── HOME HERO (2-col) ── */
+.home-hero{
+  background:linear-gradient(135deg,rgba(61,0,102,.5),rgba(10,22,40,.35));
+  border-radius:12px;padding:28px 32px;margin-bottom:24px;
+  display:grid;grid-template-columns:1fr 288px;gap:24px;align-items:center;
+}
+.home-hero-left{}
+.greeting{font-size:26px;font-weight:900;margin-bottom:0}
+.home-hero-right{}
+.embed-tiny-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.embed-tiny-label::before{content:'';width:3px;height:11px;background:var(--green);border-radius:2px}
+
+/* ── HOME NAV CARDS ── */
+.home-nav-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+.hnc{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.08);border-radius:6px;padding:12px 16px;cursor:pointer;transition:background .15s;font-weight:700;font-size:13px}
+.hnc:hover{background:rgba(255,255,255,.15)}
+.hnc-icon{width:40px;height:40px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+
+/* ── FEATURED BANNER ── */
+.featured-banner{
+  background:linear-gradient(135deg,#0a2a14,#0d3d1a,#1a5c2a);
+  border-radius:12px;padding:32px 36px;margin-bottom:28px;
+  border-left:4px solid var(--green);
+  position:relative;overflow:hidden;
+}
+.featured-banner::before{
+  content:'FEATURED';position:absolute;top:16px;right:24px;
+  font-size:9px;font-weight:800;letter-spacing:.25em;color:var(--green);opacity:.6;
+}
+.featured-tag{font-size:10px;font-weight:800;letter-spacing:.2em;color:var(--green);text-transform:uppercase;margin-bottom:10px}
+.featured-headline{font-size:24px;font-weight:900;line-height:1.2;letter-spacing:-.3px;margin-bottom:8px}
+.featured-sub{font-size:13px;color:var(--muted);font-weight:400;line-height:1.6;max-width:480px}
+
+/* ── PYRAMID ── */
+.pyramid-wrap{margin-bottom:28px}
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:2px}
+.pyr-tier{
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  padding:18px 32px;border-radius:3px;cursor:default;transition:filter .2s;
+  text-align:center;
+}
+.pyr-tier:hover{filter:brightness(1.1)}
+.pyr-tier.bot{width:100%;background:linear-gradient(135deg,#0d3d1a,#1DB954);border-radius:0 0 6px 6px}
+.pyr-tier.mid{width:72%;background:linear-gradient(135deg,#005a5a,#00a3a3)}
+.pyr-tier.top{width:42%;background:linear-gradient(135deg,#7a5500,#FFD700);color:#000;border-radius:6px 6px 0 0}
+.pyr-label{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.pyr-sub{font-size:12px;opacity:.92;margin-top:4px;font-weight:400}
+
+/* ── SHIFT CARDS ── */
+.shift-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.shift-card{background:var(--surface);border-radius:10px;padding:20px 24px;display:grid;grid-template-columns:1fr 40px 1fr;gap:12px;align-items:center;transition:background .15s}
+.shift-card:hover{background:var(--surface2)}
+.shift-from{border-left:2px solid rgba(205,92,92,.45);padding-left:12px}
+.shift-from-label{font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(205,92,92,.6);margin-bottom:5px}
+.shift-from-text{font-size:13px;font-weight:600;color:rgba(255,255,255,.72);line-height:1.35}
+.shift-arrow{text-align:center;font-size:18px;color:var(--muted)}
+.shift-to{border-left:2px solid rgba(29,185,84,.45);padding-left:12px}
+.shift-to-label{font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--green);margin-bottom:5px;opacity:.7}
+.shift-to-text{font-size:13px;font-weight:700;color:var(--white);line-height:1.35}
+
+/* ── PRINCIPLES ── */
+.principles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.principle-box{border-radius:10px;padding:24px;border:1px solid}
+.principle-box.do{background:rgba(29,185,84,.07);border-color:rgba(29,185,84,.2)}
+.principle-box.dont{background:rgba(205,92,92,.06);border-color:rgba(205,92,92,.15)}
+.pb-title{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
+.principle-box.do .pb-title{color:var(--green)}
+.principle-box.dont .pb-title{color:#CD5C5C}
+.pb-list{list-style:none}
+.pb-list li{font-size:13px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:flex-start;gap:8px;color:var(--white)}
+.pb-list li:last-child{border-bottom:none}
+.pb-list li::before{font-size:14px;flex-shrink:0;margin-top:-1px}
+.principle-box.do .pb-list li::before{content:'✓';color:var(--green)}
+.principle-box.dont .pb-list li::before{content:'✕';color:#CD5C5C}
+
+/* ── ROADMAP ── */
+.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--surface2);border-radius:8px;overflow:hidden;margin-bottom:28px}
+.roadmap-col{background:var(--bg);padding:0}
+.roadmap-head{padding:12px 20px;border-bottom:2px solid var(--green);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.roadmap-body{padding:16px 20px}
+.roadmap-title{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--white);line-height:1.3}
+.roadmap-list{list-style:none}
+.roadmap-list li{font-size:13px;color:var(--white);padding:6px 0 6px 12px;border-bottom:1px solid rgba(255,255,255,.05);position:relative;line-height:1.5}
+.roadmap-list li::before{content:'·';position:absolute;left:0;color:var(--green);font-size:16px;line-height:1.1}
+.roadmap-list li:last-child{border-bottom:none}
+
+/* ── WIN CARDS ── */
+.win-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.win-card{background:var(--gold);color:#000;border-radius:10px;padding:24px;transition:transform .15s;cursor:default}
+.win-card:hover{transform:translateY(-3px)}
+.win-card-icon{font-size:24px;margin-bottom:12px}
+.win-card h3{font-size:14px;font-weight:800;line-height:1.2;margin-bottom:12px}
+.win-card ul{list-style:none}
+.win-card li{font-size:12px;font-weight:500;opacity:.88;padding:5px 0 5px 12px;position:relative;border-bottom:1px solid rgba(0,0,0,.1)}
+.win-card li:last-child{border-bottom:none}
+.win-card li::before{content:'→';position:absolute;left:0;font-size:10px}
+
+/* ── CHECKLIST ── */
+.checklist{list-style:none;border-top:1px solid var(--surface2);margin-bottom:24px}
+.checklist li{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--surface2);font-size:14px;font-weight:500}
+.check-circle{width:34px;height:34px;border-radius:50%;background:var(--green);color:#000;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0}
+
+/* ── CLOSING STATEMENT ── */
+.closing-card{
+  background:linear-gradient(135deg,#001a08,#0a1628);
+  border-radius:12px;padding:36px;margin-top:4px;
+  font-size:20px;font-weight:800;line-height:1.4;letter-spacing:-.2px;
+}
+.closing-card .green{color:var(--green)}
+
+/* ── EDITORIAL 3.0 ── */
+.evo-track{margin-bottom:28px}
+.evo-era{margin-bottom:20px}
+.evo-era-header{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--surface2);margin-bottom:10px}
+.evo-era-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.evo-era-name{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.evo-era-desc{font-size:11px;color:var(--muted);font-weight:400;margin-left:auto}
+.evo-items{display:flex;flex-wrap:wrap;gap:6px;padding-left:24px}
+.evo-tag{background:var(--surface);border-radius:20px;padding:5px 13px;font-size:12px;font-weight:600;color:var(--white)}
+.evo-tag.now{background:rgba(29,185,84,.15);color:var(--green);border:1px solid rgba(29,185,84,.3);font-weight:700}
+
+/* ── 4S FRAMEWORK ── */
+.four-s{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--surface2);border-radius:8px;overflow:hidden;margin-bottom:28px}
+.s-col{background:var(--bg);padding:24px 20px}
+.s-letter{font-size:56px;font-weight:900;line-height:.9;letter-spacing:-.04em;margin-bottom:6px;opacity:.15}
+.s-name{font-size:17px;font-weight:800;margin-bottom:2px}
+.s-sub{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.s-col:nth-child(1) .s-letter,.s-col:nth-child(1) .s-name{color:var(--gold)}
+.s-col:nth-child(2) .s-letter,.s-col:nth-child(2) .s-name{color:var(--green)}
+.s-col:nth-child(3) .s-letter,.s-col:nth-child(3) .s-name{color:#6495ED}
+.s-col:nth-child(4) .s-letter,.s-col:nth-child(4) .s-name{color:#FF8C00}
+.s-bullets{list-style:none}
+.s-bullets li{font-size:13px;color:var(--white);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);padding-left:12px;position:relative}
+.s-bullets li::before{content:'→';position:absolute;left:0;font-size:10px}
+.s-col:nth-child(1) .s-bullets li::before{color:var(--gold)}
+.s-col:nth-child(2) .s-bullets li::before{color:var(--green)}
+.s-col:nth-child(3) .s-bullets li::before{color:#6495ED}
+.s-col:nth-child(4) .s-bullets li::before{color:#FF8C00}
+
+/* ── VISION CARDS ── */
+.vision-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.vision-card{background:var(--surface);border-radius:10px;padding:24px;border-top:3px solid var(--gold)}
+.vision-card-icon{font-size:22px;margin-bottom:10px}
+.vision-card h3{font-size:14px;font-weight:800;margin-bottom:6px;line-height:1.2}
+.vision-card p{font-size:13px;color:var(--white);line-height:1.6;font-weight:400}
+
+/* ── PLAYBACK SHIFT ── */
+.pb-shift{background:var(--surface);border-radius:10px;padding:28px;margin-bottom:28px;display:grid;grid-template-columns:1fr 40px 1fr 1fr;gap:20px;align-items:center}
+.pb-pct{font-size:56px;font-weight:900;line-height:1;letter-spacing:-.04em}
+.pb-pct.old{color:var(--surface3);text-decoration:line-through;text-decoration-color:#555;text-decoration-thickness:3px}
+.pb-pct.new1{color:var(--green)}
+.pb-pct.new2{color:#6495ED}
+.pb-desc{font-size:13px;color:var(--white);margin-top:6px;line-height:1.6}
+.pb-arrow{text-align:center;font-size:24px;color:var(--muted)}
+
+/* ── PLAYLIST CARDS ── */
+.playlist-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.pl-card{background:var(--surface);border-radius:8px;overflow:hidden;cursor:pointer;transition:background .15s}
+.pl-card:hover{background:var(--surface2)}
+.pl-art{height:120px;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative}
+.pl-body{padding:14px}
+.pl-name{font-size:14px;font-weight:700;margin-bottom:4px;line-height:1.2}
+.pl-desc{font-size:13px;color:var(--white);line-height:1.5}
+.pl-badge{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:12px;margin-top:8px;background:rgba(29,185,84,.15);color:var(--green);border:1px solid rgba(29,185,84,.25)}
+
+/* ── LANGUAGE TABLE ── */
+.lang-table{width:100%;border-collapse:collapse;margin-bottom:28px}
+.lang-table th{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:8px 14px;border-bottom:2px solid var(--surface2);text-align:left}
+.lang-table td{padding:10px 14px;border-bottom:1px solid var(--surface2);font-size:13px;vertical-align:middle}
+.lang-table tr:hover td{background:rgba(255,255,255,.03)}
+.lang-name{font-weight:700;font-size:14px}
+.lang-bar-wrap{width:120px}
+.lang-bar{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--green),#0d7a33)}
+.lang-pct{font-weight:700;font-size:14px}
+.lang-badge{display:inline-block;font-size:9px;font-weight:800;padding:2px 8px;border-radius:12px;letter-spacing:.05em;text-transform:uppercase}
+.badge-focus{background:rgba(29,185,84,.15);color:var(--green);border:1px solid rgba(29,185,84,.2)}
+.badge-opp{background:rgba(255,215,0,.12);color:var(--gold);border:1px solid rgba(255,215,0,.2)}
+.badge-none{background:rgba(255,255,255,.06);color:var(--muted)}
+
+/* ── PILLARS GRID ── */
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--surface2);border-radius:8px;overflow:hidden;margin-bottom:28px}
+.pillar-cell{background:var(--bg);padding:22px;transition:background .15s;cursor:default}
+.pillar-cell:hover{background:var(--surface)}
+.pillar-num{font-size:32px;font-weight:900;color:rgba(255,255,255,.06);line-height:1;margin-bottom:6px}
+.pillar-cell h3{font-size:13px;font-weight:700;margin-bottom:6px;line-height:1.3}
+.pillar-cell p{font-size:13px;color:var(--white);line-height:1.6}
+
+/* ── PROJECT CARDS ── */
+.project-stack{display:flex;flex-direction:column;gap:0;margin-bottom:28px;border-radius:8px;overflow:hidden}
+.proj-card{
+  position:relative;overflow:hidden;
+  min-height:140px;display:flex;align-items:flex-end;
+  padding:28px 28px;cursor:default;transition:min-height .25s;
+}
+.proj-card:hover{min-height:170px}
+.proj-bg{position:absolute;inset:0;z-index:0;transition:transform .3s}
+.proj-card:hover .proj-bg{transform:scale(1.02)}
+.proj-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.15) 100%)}
+.proj-content{position:relative;z-index:2;max-width:600px}
+.proj-num{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.58);margin-bottom:6px}
+.proj-name{font-size:22px;font-weight:900;line-height:1.1;letter-spacing:-.3px;margin-bottom:4px}
+.proj-tagline{font-style:italic;font-size:13px;color:rgba(255,255,255,.72);margin-bottom:6px}
+.proj-desc{font-size:13px;color:rgba(255,255,255,.78);line-height:1.6;font-weight:400}
+.proj-launch{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;border:1px solid rgba(255,255,255,.35);padding:3px 10px;border-radius:2px;margin-top:10px;color:rgba(255,255,255,.72)}
+
+/* ── PLAYER BAR ── */
+.player-bar{grid-column:1/-1;background:#181818;border-top:1px solid #282828;height:var(--player-h);display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;padding:0 16px}
+.player-left{display:flex;align-items:center;gap:12px}
+.player-art{width:56px;height:56px;border-radius:4px;background:linear-gradient(135deg,var(--green),#191414);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.player-track-info h4{font-size:14px;font-weight:600}
+.player-track-info p{font-size:11px;color:var(--muted)}
+.player-heart{color:var(--green);font-size:18px;cursor:pointer;margin-left:8px}
+.player-center{display:flex;flex-direction:column;align-items:center;gap:8px}
+.player-controls{display:flex;align-items:center;gap:16px}
+.ctrl-btn{background:none;border:none;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .1s}
+.ctrl-btn:hover{color:var(--white)}
+.ctrl-btn svg{width:16px;height:16px;fill:currentColor}
+.ctrl-btn.play{background:var(--white);color:#000;border-radius:50%;width:32px;height:32px}
+.ctrl-btn.play:hover{background:#e0e0e0}
+.ctrl-btn.play svg{width:14px;height:14px}
+.progress-bar-wrap{display:flex;align-items:center;gap:8px;width:100%}
+.progress-time{font-size:11px;color:var(--muted);flex-shrink:0}
+.progress-track{flex:1;height:4px;background:var(--surface3);border-radius:2px;position:relative;cursor:pointer}
+.progress-fill{height:100%;background:var(--white);border-radius:2px;animation:progress 60s linear infinite}
+.progress-track:hover .progress-fill{background:var(--green)}
+@keyframes progress{from{width:0%}to{width:100%}}
+.player-right{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.vol-slider{width:80px;height:4px;background:var(--surface3);border-radius:2px}
+.vol-fill{width:70%;height:100%;background:var(--white);border-radius:2px}
+.vol-slider:hover .vol-fill{background:var(--green)}
+.now-playing-label{font-size:10px;font-weight:700;color:var(--green);letter-spacing:.15em;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="brand-area">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.496 17.308a.75.75 0 0 1-1.032.25c-2.824-1.725-6.38-2.115-10.57-1.158a.75.75 0 0 1-.334-1.463c4.584-1.047 8.52-.596 11.686 1.339a.75.75 0 0 1 .25 1.032zm1.466-3.263a.938.938 0 0 1-1.29.309c-3.231-1.986-8.156-2.562-11.977-1.401a.937.937 0 1 1-.546-1.791c4.366-1.328 9.79-.685 13.504 1.593a.938.938 0 0 1 .309 1.29zm.126-3.4C15.47 8.419 8.952 8.208 5.454 9.276a1.125 1.125 0 0 1-.652-2.153c4.023-1.218 10.712-.983 14.937 1.58a1.125 1.125 0 0 1-1.651 1.942z"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">Sulinna</div>
+        <div class="brand-sub">India Editorial 2026</div>
+      </div>
+    </div>
+    <div onclick="showSection('home')" class="nav-item active" id="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h4.5v-6a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6H20V7.577l-7.5-4.33zm-2-1.732a3 3 0 0 1 3 0l7.5 4.33a2 2 0 0 1 1 1.732V21a1 1 0 0 1-1 1h-6.5a1 1 0 0 1-1-1v-6h-3v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.577a2 2 0 0 1 1-1.732l7.5-4.33z"/></svg>
+      Home
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24"><path d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 1 0 1.414-1.414l-4.344-4.344a9.157 9.157 0 0 0 2.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.279c0-4.006 3.302-7.279 7.407-7.279s7.407 3.273 7.407 7.279-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.279z"/></svg>
+      Search
+    </div>
+  </div>
+
+  <div class="sidebar-library">
+    <div class="library-header"><span>Your Library</span></div>
+    <div class="library-divider"></div>
+    <div class="lib-item active" id="lib-home" onclick="showSection('home')">
+      <div class="lib-item-art" style="background:linear-gradient(135deg,#3D0066,#7B2FBE)">🏠</div>
+      <div class="lib-item-info"><div class="lib-item-name">Home</div><div class="lib-item-sub">India's Editorial Vision</div></div>
+    </div>
+    <div class="lib-item" id="lib-ed30" onclick="showSection('ed30')">
+      <div class="lib-item-art" style="background:linear-gradient(135deg,#001a4a,#6495ED)">📈</div>
+      <div class="lib-item-info"><div class="lib-item-name">Editorial 3.0</div><div class="lib-item-sub">Evolution &amp; Framework</div></div>
+    </div>
+    <div class="lib-item" id="lib-playlists" onclick="showSection('playlists')">
+      <div class="lib-item-art" style="background:linear-gradient(135deg,#1a0800,#c45000)">🎵</div>
+      <div class="lib-item-info"><div class="lib-item-name">Playlists</div><div class="lib-item-sub">Language &amp; Genre IPs</div></div>
+    </div>
+    <div class="lib-item" id="lib-projects" onclick="showSection('projects')">
+      <div class="lib-item-art" style="background:linear-gradient(135deg,#002a1a,#1DB954)">🚀</div>
+      <div class="lib-item-info"><div class="lib-item-name">2026 Projects</div><div class="lib-item-sub">Five bets that matter</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN AREA ── -->
+<div class="main-area">
+  <nav class="topbar" id="topbar">
+    <div class="topbar-nav">
+      <button class="topbar-btn"><svg viewBox="0 0 24 24"><path d="M15.957 2.793a1 1 0 0 1 0 1.414L8.164 12l7.793 7.793a1 1 0 1 1-1.414 1.414L5.336 12l9.207-9.207a1 1 0 0 1 1.414 0z"/></svg></button>
+      <button class="topbar-btn"><svg viewBox="0 0 24 24"><path d="M8.043 2.793a1 1 0 0 0 0 1.414L15.836 12l-7.793 7.793a1 1 0 1 0 1.414 1.414L18.664 12 9.457 2.793a1 1 0 0 0-1.414 0z"/></svg></button>
+    </div>
+    <div class="topbar-title" id="topbar-title">India Editorial 2026</div>
+    <div class="topbar-right">
+      <div class="topbar-avatar">S</div>
+      <span class="topbar-username">Sulinna</span>
+    </div>
+  </nav>
+
+  <div class="content" id="mainContent" onscroll="handleScroll()">
+
+    <!-- ══ HOME ══ -->
+    <section class="section active" id="home">
+      <div class="section-header" style="background:linear-gradient(180deg,#2a0044 0%,#0a1628 60%,var(--bg) 100%)">
+        <h1>India's Editorial Vision</h1>
+        <div class="h1-sub">From Curation to Taste</div>
+      </div>
+      <div class="section-body">
+
+        <!-- Hero row: greeting left, embed right -->
+        <div class="home-hero">
+          <div class="home-hero-left">
+            <div class="greeting">Good morning, Sulinna 👋</div>
+          </div>
+          <div class="home-hero-right">
+            <div class="embed-tiny-label">Now playing — Dhurandhar</div>
+            <iframe style="border-radius:10px" src="https://open.spotify.com/embed/track/1ifI8ipBJreNmLDYigFc6d?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <!-- Quick nav -->
+        <div class="home-nav-cards">
+          <div class="hnc" onclick="showSection('ed30')">
+            <div class="hnc-icon" style="background:rgba(100,149,237,.15)">📈</div>
+            Editorial 3.0
+          </div>
+          <div class="hnc" onclick="showSection('playlists')">
+            <div class="hnc-icon" style="background:rgba(196,80,0,.15)">🎵</div>
+            Playlists
+          </div>
+          <div class="hnc" onclick="showSection('projects')">
+            <div class="hnc-icon" style="background:rgba(29,185,84,.12)">🚀</div>
+            2026 Projects
+          </div>
+        </div>
+
+        <!-- Featured banner -->
+        <div class="featured-banner">
+          <div class="featured-tag">Featured · India Editorial</div>
+          <div class="featured-headline">We are Curators of Culture, not Playlists.</div>
+          <div class="featured-sub">India Editorial's role is to shape demand, not reflect it. The playlist is a container — what we build inside and around it is what makes it matter.</div>
+        </div>
+
+        <!-- Storytelling content -->
+        <div class="section-sublabel">The Storytelling Framework</div>
+
+        <div class="pyramid-wrap">
+          <div class="pyramid">
+            <div class="pyr-tier top">
+              <div class="pyr-label">🎬 Tier-0 Video Shows</div>
+              <div class="pyr-sub">One pilot in Hindi, Punjabi &amp; English</div>
+            </div>
+            <div class="pyr-tier mid">
+              <div class="pyr-label">📰 Editorial Watchfeeds — Text</div>
+              <div class="pyr-sub">Top 5 languages + Radar, Equal</div>
+            </div>
+            <div class="pyr-tier bot">
+              <div class="pyr-label">🎵 Playlist IPs — The Foundation</div>
+              <div class="pyr-sub">Haryanvi, Catalogue, Classical, Devotional</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-sublabel">The 3-Year Shift</div>
+        <div class="shift-cards">
+          <div class="shift-card">
+            <div class="shift-from">
+              <div class="shift-from-label">From</div>
+              <div class="shift-from-text">Playlist-led programming</div>
+            </div>
+            <div class="shift-arrow">→</div>
+            <div class="shift-to">
+              <div class="shift-to-label">To</div>
+              <div class="shift-to-text">Owning language &amp; genre IPs</div>
+            </div>
+          </div>
+          <div class="shift-card">
+            <div class="shift-from">
+              <div class="shift-from-label">From</div>
+              <div class="shift-from-text">Release-led ecosystems</div>
+            </div>
+            <div class="shift-arrow">→</div>
+            <div class="shift-to">
+              <div class="shift-to-label">To</div>
+              <div class="shift-to-text">Proactive Cultural Storytelling</div>
+            </div>
+          </div>
+          <div class="shift-card">
+            <div class="shift-from">
+              <div class="shift-from-label">From</div>
+              <div class="shift-from-text">Promotional Artist Support</div>
+            </div>
+            <div class="shift-arrow">→</div>
+            <div class="shift-to">
+              <div class="shift-to-label">To</div>
+              <div class="shift-to-text">Artist discovery &amp; acceleration</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="principles">
+          <div class="principle-box do">
+            <div class="pb-title">What we will prioritise</div>
+            <ul class="pb-list">
+              <li>Building flagships over long-tail curation</li>
+              <li>Deeper storytelling through IPs</li>
+              <li>Early artist bets</li>
+            </ul>
+          </div>
+          <div class="principle-box dont">
+            <div class="pb-title">What we will de-prioritise</div>
+            <ul class="pb-list">
+              <li>Low-impact playlisting</li>
+              <li>Release-led programming cadence</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-sublabel">2026 Roadmap</div>
+        <div class="roadmap">
+          <div class="roadmap-col">
+            <div class="roadmap-head">April — May 2026</div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">Refine Playlist Ecosystem</div>
+              <ul class="roadmap-list">
+                <li>Reduce low-impact surfaces 20–30%</li>
+                <li>Build editorial-first IPs &amp; re-brand</li>
+                <li>Punjabi 101 · Catalogue · Haryanvi 101</li>
+              </ul>
+            </div>
+          </div>
+          <div class="roadmap-col">
+            <div class="roadmap-head">June — September 2026</div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">Introduce Editorial Watchfeeds</div>
+              <ul class="roadmap-list">
+                <li>Radar · Equal · Fresh Finds PLs</li>
+                <li>Hindi, Punjabi, Tamil, Telugu voice</li>
+              </ul>
+            </div>
+          </div>
+          <div class="roadmap-col">
+            <div class="roadmap-head">Sep — December 2026</div>
+            <div class="roadmap-body">
+              <div class="roadmap-title">Pilot 3 Tier-0 Shows</div>
+              <ul class="roadmap-list">
+                <li>Video shows amplify existing IPs</li>
+                <li>Punjabi · Catalogue · Trending Now India</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- How We Win -->
+        <div class="section-sublabel">How We'll Know We're Winning</div>
+        <div class="win-cards">
+          <div class="win-card">
+            <div class="win-card-icon">🏛️</div>
+            <h3>Cultural Authority</h3>
+            <ul>
+              <li>Streams used as cultural currency</li>
+              <li>6–8 IPs recognised beyond platform</li>
+            </ul>
+          </div>
+          <div class="win-card">
+            <div class="win-card-icon">🌐</div>
+            <h3>Editorial-led Cultural Ecosystem</h3>
+            <ul>
+              <li>Each language has 1–2 defining Editorial brands</li>
+              <li>Editorial drives cultural conversation</li>
+            </ul>
+          </div>
+          <div class="win-card">
+            <div class="win-card-icon">🚀</div>
+            <h3>Artist Growth &amp; Crossover</h3>
+            <ul>
+              <li>Editorial-backed artists succeed locally + globally</li>
+              <li>2 genres make the export leap</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-sublabel">By End of 2026, We Will Have...</div>
+        <ul class="checklist">
+          <li><div class="check-circle">1</div>25–30% reduction in low-impact editorial surfaces</li>
+          <li><div class="check-circle">2</div>3 new flagship IPs with clear brand recognition</li>
+          <li><div class="check-circle">3</div>Quarterly cultural trends reports — internal &amp; external</li>
+          <li><div class="check-circle">4</div>At least one Editorial Watchfeed in Top 4 languages</li>
+          <li><div class="check-circle">5</div>2 pilot video shows in the market</li>
+        </ul>
+
+        <div class="closing-card">
+          By 2028, India Editorial will decide<br>
+          <span class="green">what breaks, what scales, and what travels beyond borders.</span>
+        </div>
+
+        <div class="section-gap"></div>
+      </div>
+    </section>
+
+    <!-- ══ EDITORIAL 3.0 ══ -->
+    <section class="section" id="ed30">
+      <div class="section-header" style="background:linear-gradient(180deg,#001a4a 0%,#001030 40%,var(--bg) 100%)">
+        <h1>Editorial 3.0</h1>
+        <p>From playlist maintenance to cultural power — the evolution of India Editorial.</p>
+      </div>
+      <div class="section-body">
+
+        <div class="embed-wrap">
+          <div class="embed-label">Now playing — Rap 91</div>
+          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX1ct2TQrAvRf?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+
+        <div class="section-sublabel">The Journey — Editorial 1.0 to 3.0</div>
+        <div class="evo-track">
+          <div class="evo-era">
+            <div class="evo-era-header">
+              <div class="evo-era-dot" style="background:#555"></div>
+              <div class="evo-era-name" style="color:#777">1.0 — Foundation</div>
+              <div class="evo-era-desc">Early Days</div>
+            </div>
+            <div class="evo-items">
+              <span class="evo-tag">Listening to Unreleased Music</span>
+            </div>
+          </div>
+          <div class="evo-era">
+            <div class="evo-era-header">
+              <div class="evo-era-dot" style="background:#6495ED"></div>
+              <div class="evo-era-name" style="color:#6495ED">2.0 — Architecture</div>
+              <div class="evo-era-desc">Building the System</div>
+            </div>
+            <div class="evo-items">
+              <span class="evo-tag">Playlist Creation &amp; Maintenance</span>
+              <span class="evo-tag">Brand Building for Flagships</span>
+              <span class="evo-tag">Curating Browse Hubs</span>
+              <span class="evo-tag">Data Analysis</span>
+              <span class="evo-tag">Cold Starting New Releases</span>
+              <span class="evo-tag">EQS Scoring</span>
+              <span class="evo-tag">AI DJ Prompts &amp; Segments</span>
+              <span class="evo-tag">Creating Promotions</span>
+              <span class="evo-tag">Curating Editorial Watchfeeds</span>
+            </div>
+          </div>
+          <div class="evo-era">
+            <div class="evo-era-header">
+              <div class="evo-era-dot" style="background:#1DB954"></div>
+              <div class="evo-era-name" style="color:#1DB954">3.0 — Culture</div>
+              <div class="evo-era-desc">Now</div>
+            </div>
+            <div class="evo-items">
+              <span class="evo-tag now">Storytelling &amp; Commentary ← Now</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-sublabel">Framework — SPOT · SHAPE · SHOW · SCALE</div>
+        <div class="four-s">
+          <div class="s-col">
+            <div class="s-letter">S</div>
+            <div class="s-name">Spot</div>
+            <div class="s-sub">Trend Intelligence</div>
+            <ul class="s-bullets">
+              <li>Spotting Internal Trends</li>
+              <li>Artist &amp; Song milestones</li>
+              <li>Own discovery of new music</li>
+            </ul>
+          </div>
+          <div class="s-col">
+            <div class="s-letter">S</div>
+            <div class="s-name">Shape</div>
+            <div class="s-sub">On-Platform Power</div>
+            <ul class="s-bullets">
+              <li>On-platform curation</li>
+              <li>Playlist Architecture</li>
+              <li>Language &amp; genre IPs</li>
+            </ul>
+          </div>
+          <div class="s-col">
+            <div class="s-letter">S</div>
+            <div class="s-name">Show</div>
+            <div class="s-sub">Cultural Visibility</div>
+            <ul class="s-bullets">
+              <li>Playlist covers as cultural markers</li>
+              <li>Watchfeeds + Storytelling</li>
+              <li>Packaging trends externally</li>
+            </ul>
+          </div>
+          <div class="s-col">
+            <div class="s-letter">S</div>
+            <div class="s-name">Scale</div>
+            <div class="s-sub">Cultural Ownership</div>
+            <ul class="s-bullets">
+              <li>Build Cultural moments via IPs</li>
+              <li>Cultural ownership of genres</li>
+              <li>IRL events + community</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-sublabel">The 3-Year Vision — By 2028 We Decide</div>
+        <div class="vision-cards">
+          <div class="vision-card">
+            <div class="vision-card-icon">💥</div>
+            <h3>What breaks</h3>
+            <p>Spot music &amp; talent ahead of the curve. India Editorial calls the next big thing first.</p>
+          </div>
+          <div class="vision-card">
+            <div class="vision-card-icon">📡</div>
+            <h3>What scales</h3>
+            <p>Build IPs that compound over time and reach across languages and platforms.</p>
+          </div>
+          <div class="vision-card">
+            <div class="vision-card-icon">✈️</div>
+            <h3>What travels beyond borders</h3>
+            <p>Push Indian music across geographies. Diaspora markets and global editorial networks.</p>
+          </div>
+        </div>
+
+        <div class="section-sublabel">From Playback to Playfront — The 2026 Shift</div>
+        <div class="pb-shift">
+          <div>
+            <div class="pb-pct old">100%</div>
+            <div class="pb-desc">Current focus — maintaining the full playlist ecosystem</div>
+          </div>
+          <div class="pb-arrow">→</div>
+          <div>
+            <div class="pb-pct new1">70%</div>
+            <div class="pb-desc">Building brands &amp; maintaining fewer, stronger playlists</div>
+          </div>
+          <div>
+            <div class="pb-pct new2">30%</div>
+            <div class="pb-desc">Emerging scenes + Editorial storytelling on artists &amp; songs</div>
+          </div>
+        </div>
+
+        <div class="section-gap"></div>
+      </div>
+    </section>
+
+    <!-- ══ PLAYLISTS ══ -->
+    <section class="section" id="playlists">
+      <div class="section-header" style="background:linear-gradient(180deg,#2a0e00 0%,#3d1800 30%,var(--bg) 100%)">
+        <h1>Playlists</h1>
+        <p>Eight languages. One platform. The IPs that will define Indian music for the next decade.</p>
+      </div>
+      <div class="section-body">
+
+        <div class="section-sublabel">Flagship IPs</div>
+        <div class="playlist-cards">
+          <div class="pl-card">
+            <div class="pl-art" style="background:linear-gradient(135deg,#0a0a0a,#1a1a2e)">🎤</div>
+            <div class="pl-body">
+              <div class="pl-name">Rap 91</div>
+              <div class="pl-desc">India's hip-hop flagship. 450K+ followers. The playlist that made desi rap a global genre.</div>
+              <span class="pl-badge">Flagship IP</span>
+            </div>
+          </div>
+          <div class="pl-card">
+            <div class="pl-art" style="background:linear-gradient(135deg,#FF4757,#FF6B81)">🌟</div>
+            <div class="pl-body">
+              <div class="pl-name">I-Pop Icons</div>
+              <div class="pl-desc">The playlist that made Indian pop a genre. 428K followers since Aug 2024.</div>
+              <span class="pl-badge">Flagship IP</span>
+            </div>
+          </div>
+          <div class="pl-card">
+            <div class="pl-art" style="background:linear-gradient(135deg,#FF8C00,#FFB300)">🥁</div>
+            <div class="pl-body">
+              <div class="pl-name">Punjabi 101</div>
+              <div class="pl-desc">1.4M saves. The sound of a diaspora — from Lahore to London to Brampton.</div>
+              <span class="pl-badge">Flagship IP</span>
+            </div>
+          </div>
+          <div class="pl-card">
+            <div class="pl-art" style="background:linear-gradient(135deg,#2d5a2d,#4CAF50)">🌾</div>
+            <div class="pl-body">
+              <div class="pl-name">Haryanvi 101</div>
+              <div class="pl-desc">The breakthrough waiting to happen. The genre the mainstream hasn't caught up to yet.</div>
+              <span class="pl-badge" style="background:rgba(255,215,0,.12);color:var(--gold);border-color:rgba(255,215,0,.2)">New IP · 2026</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="embed-wrap">
+          <div class="embed-label">Now playing</div>
+          <div class="embed-row">
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWXkMnNwaapIj?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX5cZuAHLNjGz?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        </div>
+
+        <div class="section-sublabel">Language Priority Matrix</div>
+        <table class="lang-table">
+          <thead>
+            <tr>
+              <th>Language</th><th>Stream Share '25</th><th>Share %</th><th>Focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="lang-name">Hindi</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:100%"></div></div></td><td class="lang-pct">37%</td><td><span class="lang-badge badge-focus">Current Focus</span></td></tr>
+            <tr><td class="lang-name">English</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:43%"></div></div></td><td class="lang-pct">16%</td><td><span class="lang-badge badge-focus">Current Focus</span></td></tr>
+            <tr><td class="lang-name">Punjabi</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:40%"></div></div></td><td class="lang-pct">15%</td><td><span class="lang-badge badge-focus">Current Focus</span></td></tr>
+            <tr><td class="lang-name">Tamil</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:24%"></div></div></td><td class="lang-pct">9%</td><td><span class="lang-badge badge-focus">Current Focus</span></td></tr>
+            <tr><td class="lang-name">Telugu</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:13%"></div></div></td><td class="lang-pct">5%</td><td><span class="lang-badge badge-focus">Current Focus</span></td></tr>
+            <tr><td class="lang-name">Malayalam</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:11%"></div></div></td><td class="lang-pct">4%</td><td><span class="lang-badge badge-focus">Current Focus</span></td></tr>
+            <tr><td class="lang-name">Haryanvi</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:5%;background:linear-gradient(90deg,var(--gold),#b8a000)"></div></div></td><td class="lang-pct">2%</td><td><span class="lang-badge badge-opp">2026 Opportunity</span></td></tr>
+            <tr><td class="lang-name">Bhojpuri</td><td><div class="lang-bar-wrap"><div class="lang-bar" style="width:5%;background:#555"></div></div></td><td class="lang-pct">2%</td><td><span class="lang-badge badge-none">Curation only</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-sublabel">2026 Strategic Pillars</div>
+        <div class="pillars-grid">
+          <div class="pillar-cell">
+            <div class="pillar-num">01</div>
+            <h3>Strengthen Films-focused Playlists</h3>
+            <p>Hot-Hits franchise across languages. Re-brand Eras playlists for culturally rooted identity.</p>
+          </div>
+          <div class="pillar-cell">
+            <div class="pillar-num">02</div>
+            <h3>Deepen Cultural Rootedness</h3>
+            <p>New playlists for Commute, Weddings, Devotional, Festivals — in line with market strategy.</p>
+          </div>
+          <div class="pillar-cell">
+            <div class="pillar-num">03</div>
+            <h3>Expand / Build Playlist IPs</h3>
+            <p>Rap91, I-Pop Icons, Punjabi 101 via video storytelling &amp; IRL events. Examine Haryanvi 101.</p>
+          </div>
+          <div class="pillar-cell">
+            <div class="pillar-num">04</div>
+            <h3>Drive Artist Discovery</h3>
+            <p>Expand RADAR, Fresh Finds &amp; EQUAL. Grow artist-first presence for I-Pop and Rap91.</p>
+          </div>
+          <div class="pillar-cell">
+            <div class="pillar-num">05</div>
+            <h3>Enable Culture-first Storytelling</h3>
+            <p>EWFs for select playlists. Editorial presence as currency. Celebrate 100M stream milestones.</p>
+          </div>
+          <div class="pillar-cell">
+            <div class="pillar-num">06</div>
+            <h3>Enable Export</h3>
+            <p>Engage editors in diaspora markets — US, CA, UK, AU, MENA — to drive Indian music globally.</p>
+          </div>
+        </div>
+
+        <div class="section-gap"></div>
+      </div>
+    </section>
+
+    <!-- ══ 2026 PROJECTS ══ -->
+    <section class="section" id="projects">
+      <div class="section-header" style="background:linear-gradient(180deg,#002a1a 0%,#001a10 40%,var(--bg) 100%)">
+        <h1>2026 Projects</h1>
+        <p>Five bets — beyond BAU. The initiatives India Editorial will drive this year.</p>
+      </div>
+      <div class="section-body">
+
+        <div class="embed-wrap">
+          <div class="embed-label">Now playing — Hot Hits Haryanvi</div>
+          <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWZWNsJrgFkZK?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+
+        <div class="project-stack">
+          <div class="proj-card">
+            <div class="proj-bg" style="background:linear-gradient(135deg,#1a0800,#4a1500,#8a3000)"></div>
+            <div class="proj-overlay"></div>
+            <div class="proj-content">
+              <div class="proj-num">Project 01 · Q2 2026</div>
+              <div class="proj-name">Building the Film IP</div>
+              <div class="proj-tagline">"The movie never ends on Spotify."</div>
+              <div class="proj-desc">Re-branding catalogue IPs &amp; identifying existing IP for new films. Making Spotify the go-to destination for film music in Hindi and Tamil. New + Catalogue.</div>
+              <div class="proj-launch">Launch: Q2 2026</div>
+            </div>
+          </div>
+          <div class="proj-card">
+            <div class="proj-bg" style="background:linear-gradient(135deg,#0d2a0d,#1a5c1a,#2d8a2d)"></div>
+            <div class="proj-overlay"></div>
+            <div class="proj-content">
+              <div class="proj-num">Project 02 · Q1 2026</div>
+              <div class="proj-name">Haryanvi Flagship IP</div>
+              <div class="proj-tagline">"The genre the mainstream hasn't caught up to yet."</div>
+              <div class="proj-desc">Launch a flagship for Haryanvi music with significant off-platform push. Cash in on the genre's major breakthrough moment. Build association with artists &amp; culture.</div>
+              <div class="proj-launch">Launch: End of Q1 2026</div>
+            </div>
+          </div>
+          <div class="proj-card">
+            <div class="proj-bg" style="background:linear-gradient(135deg,#1a0800,#5c2200,#c45000)"></div>
+            <div class="proj-overlay"></div>
+            <div class="proj-content">
+              <div class="proj-num">Project 03 · H1 2026</div>
+              <div class="proj-name">Punjabi Export</div>
+              <div class="proj-tagline">"Borders are just a playlist away."</div>
+              <div class="proj-desc">Driving the export of Punjabi music by launching a cross-functional working group. Target diaspora markets: US, CA, UK, AU, MENA. Engage editors globally.</div>
+              <div class="proj-launch">Launch: H1 2026</div>
+            </div>
+          </div>
+          <div class="proj-card">
+            <div class="proj-bg" style="background:linear-gradient(135deg,#180033,#3d0066,#6600aa)"></div>
+            <div class="proj-overlay"></div>
+            <div class="proj-content">
+              <div class="proj-num">Project 04 · H2 2026</div>
+              <div class="proj-name">Project Bhakti</div>
+              <div class="proj-tagline">"Devotion has always been India's first music."</div>
+              <div class="proj-desc">Launching a devotional on-platform IP across Hindi, Tamil &amp; Telugu. Fill the spiritual music gap on Spotify India. Build a category that has been underserved.</div>
+              <div class="proj-launch">Launch: H2 2026</div>
+            </div>
+          </div>
+          <div class="proj-card">
+            <div class="proj-bg" style="background:linear-gradient(135deg,#001a2a,#003355,#005580)"></div>
+            <div class="proj-overlay"></div>
+            <div class="proj-content">
+              <div class="proj-num">Project 05 · Ongoing</div>
+              <div class="proj-name">Project Echo</div>
+              <div class="proj-tagline">"Classical music for the streaming generation."</div>
+              <div class="proj-desc">Continuing work on classical music with a full on-platform ecosystem. Re-position classical for new audiences. Build lasting cultural IPs for India's oldest musical traditions.</div>
+              <div class="proj-launch">Ongoing · 2026</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap"></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ── PLAYER BAR ── -->
+<div class="player-bar">
+  <div class="player-left">
+    <div class="player-art">🎵</div>
+    <div class="player-track-info">
+      <div class="now-playing-label">Now Playing</div>
+      <h4>India Editorial 2026</h4>
+      <p id="playerSection">Home — India's Editorial Vision</p>
+    </div>
+    <div class="player-heart">♥</div>
+  </div>
+  <div class="player-center">
+    <div class="player-controls">
+      <button class="ctrl-btn"><svg viewBox="0 0 16 16"><path d="M13.151.922a.75.75 0 1 0-1.06 1.06L13.109 3H11.16a3.75 3.75 0 0 0-2.873 1.34l-6.173 7.356A2.25 2.25 0 0 1 .39 12.5H0V14h.391a3.75 3.75 0 0 0 2.873-1.34l6.173-7.356a2.25 2.25 0 0 1 1.724-.804h1.947l-1.017 1.018a.75.75 0 0 0 1.06 1.06L15 4.5l-2.849-3.578z"/></svg></button>
+      <button class="ctrl-btn"><svg viewBox="0 0 16 16"><path d="M3.3 1a.7.7 0 0 1 .7.7v5.15l9.95-5.744a.7.7 0 0 1 1.05.606v9.588a.7.7 0 0 1-1.05.606L4 6.862v5.088a.7.7 0 0 1-.7.7H1.7a.7.7 0 0 1-.7-.7V1.7a.7.7 0 0 1 .7-.7h1.6z"/></svg></button>
+      <button class="ctrl-btn play"><svg viewBox="0 0 16 16"><path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288V1.713z"/></svg></button>
+      <button class="ctrl-btn"><svg viewBox="0 0 16 16"><path d="M12.7 1a.7.7 0 0 0-.7.7v5.15L2.05 1.107A.7.7 0 0 0 1 1.712v9.588a.7.7 0 0 0 1.05.607L12 6.862v5.088a.7.7 0 0 0 .7.7h1.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-1.6z"/></svg></button>
+      <button class="ctrl-btn"><svg viewBox="0 0 16 16"><path d="M0 4.75A3.75 3.75 0 0 1 3.75 1h8.5A3.75 3.75 0 0 1 16 4.75v5a3.75 3.75 0 0 1-3.75 3.75H9.81l1.018 1.018a.75.75 0 1 1-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 1 1 1.06 1.06L9.811 12h2.439a2.25 2.25 0 0 0 2.25-2.25v-5a2.25 2.25 0 0 0-2.25-2.25h-8.5A2.25 2.25 0 0 0 1.5 4.75v5A2.25 2.25 0 0 0 3.75 12H5v1.5H3.75A3.75 3.75 0 0 1 0 9.75v-5z"/></svg></button>
+    </div>
+    <div class="progress-bar-wrap">
+      <span class="progress-time" id="progressTime">0:00</span>
+      <div class="progress-track"><div class="progress-fill"></div></div>
+      <span class="progress-time">30:00</span>
+    </div>
+  </div>
+  <div class="player-right">
+    <button class="ctrl-btn"><svg viewBox="0 0 16 16"><path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"/></svg></button>
+    <div class="vol-slider"><div class="vol-fill"></div></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const sections=['home','ed30','playlists','projects'];
+const names={
+  home:'Home — India\'s Editorial Vision',
+  ed30:'Editorial 3.0',
+  playlists:'Playlists — Language & Genre IPs',
+  projects:'2026 Projects'
+};
+
+function showSection(id){
+  sections.forEach(s=>{
+    document.getElementById(s).classList.remove('active');
+    const l=document.getElementById('lib-'+s);
+    if(l)l.classList.remove('active');
+    const n=document.getElementById('nav-'+s);
+    if(n)n.classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+  const l=document.getElementById('lib-'+id);
+  if(l)l.classList.add('active');
+  const n=document.getElementById('nav-'+id);
+  if(n)n.classList.add('active');
+  document.getElementById('mainContent').scrollTop=0;
+  document.getElementById('playerSection').textContent=names[id]||id;
+  document.getElementById('topbar').classList.remove('scrolled');
+  document.getElementById('topbar-title').classList.remove('visible');
+}
+
+function handleScroll(){
+  const c=document.getElementById('mainContent');
+  const t=document.getElementById('topbar');
+  const ti=document.getElementById('topbar-title');
+  if(c.scrollTop>60){t.classList.add('scrolled');ti.classList.add('visible')}
+  else{t.classList.remove('scrolled');ti.classList.remove('visible')}
+}
+
+let secs=0;
+setInterval(()=>{
+  secs=(secs+1)%1800;
+  const m=Math.floor(secs/60),s=secs%60;
+  document.getElementById('progressTime').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+},1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDITORIAL — Issue 03 · April 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700;1,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:#0D0D0D;
+  color:#F5F0E8;
+  font-family:'DM Sans',sans-serif;
+  font-weight:400;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+img,svg{display:block}
+a{color:inherit;text-decoration:none}
+
+/* ── VARIABLES ────────────────────────────────────── */
+:root{
+  --black:#0D0D0D;
+  --white:#FFFFFF;
+  --cream:#F5F0E8;
+  --green:#1DB954;
+  --gold:#FFD700;
+  --purple:#3D0066;
+  --blue:#0a1628;
+  --muted:#6b6b6b;
+  --rule:#2a2a2a;
+  --max:1200px;
+}
+
+/* ── FIXED NAV ────────────────────────────────────── */
+.mag-nav{
+  position:fixed;top:0;left:0;right:0;
+  height:48px;
+  background:rgba(13,13,13,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+  z-index:1000;
+  transition:background .3s;
+}
+.mag-nav-inner{
+  max-width:var(--max);
+  margin:0 auto;
+  height:100%;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 40px;
+}
+.mag-logo{
+  font-family:'Playfair Display',serif;
+  font-weight:400;
+  font-size:18px;
+  letter-spacing:.35em;
+  color:var(--cream);
+  text-transform:uppercase;
+}
+.mag-logo span{color:var(--green)}
+.nav-links{display:flex;gap:32px}
+.nav-link{
+  font-size:11px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:#666;transition:color .2s;
+  position:relative;padding-bottom:2px;
+}
+.nav-link::after{
+  content:'';position:absolute;bottom:0;left:0;
+  width:0;height:1px;background:var(--green);
+  transition:width .25s;
+}
+.nav-link:hover{color:var(--cream)}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+.nav-link.active{color:var(--cream)}
+
+/* ── COVER ────────────────────────────────────────── */
+.cover{
+  min-height:100vh;
+  position:relative;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  overflow:hidden;
+}
+.cover-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% 30%, rgba(61,0,102,.9) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 80% at 20% 70%, rgba(10,22,40,.8) 0%, transparent 60%),
+    linear-gradient(160deg, #1a0033 0%, #0a1628 40%, #000 100%);
+  z-index:0;
+}
+.cover-grain{
+  position:absolute;inset:0;z-index:1;
+  opacity:.18;mix-blend-mode:screen;pointer-events:none;
+}
+.cover-inner{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;
+  min-height:100vh;
+  padding:72px 60px 0;
+}
+.cover-masthead{
+  display:flex;align-items:baseline;justify-content:space-between;
+  border-bottom:1px solid rgba(245,240,232,.15);
+  padding-bottom:20px;margin-bottom:40px;
+}
+.cover-masthead-name{
+  font-family:'Playfair Display',serif;
+  font-weight:400;font-size:72px;
+  letter-spacing:.5em;
+  text-transform:uppercase;
+  line-height:1;
+  color:var(--cream);
+}
+.cover-meta{
+  font-size:11px;font-weight:500;
+  letter-spacing:.2em;color:rgba(245,240,232,.5);
+  text-transform:uppercase;text-align:right;
+  line-height:2;
+}
+.cover-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 0 60px}
+.cover-hl{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(72px,9vw,128px);
+  font-weight:900;line-height:.93;
+  letter-spacing:-.03em;
+  text-transform:uppercase;
+}
+.cover-hl .line1{display:block;color:var(--cream)}
+.cover-hl .line2{display:block;color:var(--green)}
+.cover-hl .line3{
+  display:block;
+  font-style:italic;font-weight:700;
+  font-size:clamp(36px,4.5vw,64px);
+  color:rgba(245,240,232,.45);
+  letter-spacing:0;text-transform:none;
+  margin-top:12px;
+}
+.cover-sub{
+  max-width:520px;margin-top:28px;
+  font-size:16px;font-weight:300;
+  color:rgba(245,240,232,.6);line-height:1.7;
+  letter-spacing:.02em;
+}
+.cover-byline{
+  display:flex;align-items:center;gap:16px;
+  margin-top:40px;
+  font-size:11px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:#666;
+}
+.cover-byline::before{content:'';width:32px;height:1px;background:var(--green)}
+.cover-footer{
+  position:relative;z-index:2;
+  border-top:1px solid rgba(245,240,232,.1);
+  padding:16px 60px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cover-ticker{
+  font-size:10px;font-weight:700;
+  letter-spacing:.25em;text-transform:uppercase;
+  color:#444;overflow:hidden;white-space:nowrap;
+}
+.ticker-inner{
+  display:inline-block;
+  animation:ticker 20s linear infinite;
+}
+@keyframes ticker{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.scroll-cue{
+  font-size:10px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:#444;
+  display:flex;align-items:center;gap:8px;
+}
+.scroll-arrow{
+  width:24px;height:24px;border:1px solid #333;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  animation:bob .8s ease-in-out infinite alternate;
+}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(4px)}}
+
+/* ── TOC ──────────────────────────────────────────── */
+.toc{
+  background:var(--cream);color:var(--black);
+  padding:100px 60px;
+}
+.toc-inner{max-width:var(--max);margin:0 auto}
+.toc-header{
+  display:flex;align-items:baseline;gap:24px;
+  border-bottom:3px solid var(--black);
+  padding-bottom:16px;margin-bottom:60px;
+}
+.toc-label{
+  font-family:'Playfair Display',serif;
+  font-size:11px;font-weight:700;
+  letter-spacing:.25em;text-transform:uppercase;
+}
+.toc-issue{
+  font-family:'Playfair Display',serif;
+  font-size:13px;letter-spacing:.1em;color:#888;
+}
+.toc-grid{
+  display:grid;grid-template-columns:1.4fr 1fr;
+  gap:80px;
+}
+.toc-entries{display:flex;flex-direction:column;gap:0}
+.toc-entry{
+  display:grid;grid-template-columns:64px 1fr;
+  gap:24px;align-items:start;
+  padding:20px 0;
+  border-bottom:1px solid rgba(0,0,0,.12);
+  cursor:pointer;transition:background .15s;
+}
+.toc-entry:hover .toc-entry-title{color:#0d7a33}
+.toc-page{
+  font-family:'Playfair Display',serif;
+  font-size:32px;font-weight:700;
+  color:rgba(0,0,0,.15);line-height:1;
+  padding-top:4px;
+}
+.toc-entry-section{
+  font-size:10px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:#888;margin-bottom:4px;
+}
+.toc-entry-title{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:700;line-height:1.2;
+  transition:color .2s;
+}
+.toc-entry-desc{
+  font-size:13px;color:#888;margin-top:4px;font-weight:300;
+}
+.editors-letter{padding-left:40px;border-left:3px solid var(--green)}
+.letter-label{
+  font-size:10px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:#888;margin-bottom:16px;
+}
+.letter-sig{
+  font-family:'Playfair Display',serif;
+  font-style:italic;font-size:28px;margin-top:24px;
+}
+.letter-title{font-size:12px;color:#888;margin-top:4px;font-weight:500;letter-spacing:.05em}
+.letter-body{
+  font-size:16px;line-height:1.8;color:#333;font-weight:300;
+}
+.letter-body::first-letter{
+  font-family:'Playfair Display',serif;
+  font-size:64px;font-weight:700;
+  float:left;line-height:.85;margin-right:8px;margin-top:6px;
+  color:var(--black);
+}
+
+/* ── SECTION BASE ─────────────────────────────────── */
+.mag-section{padding:100px 60px;position:relative}
+.mag-section-inner{max-width:var(--max);margin:0 auto}
+.section-stamp{
+  font-size:10px;font-weight:700;letter-spacing:.25em;
+  text-transform:uppercase;margin-bottom:16px;
+  display:flex;align-items:center;gap:12px;
+  color:var(--muted);
+}
+.section-stamp::before{
+  content:'';width:24px;height:2px;background:var(--green);flex-shrink:0;
+}
+.read-time{
+  font-size:10px;font-weight:500;letter-spacing:.12em;
+  color:#555;text-transform:uppercase;margin-top:4px;
+}
+.mag-rule{height:1px;background:var(--rule);margin:64px 0}
+
+/* ── WHAT WE BELIEVE ──────────────────────────────── */
+.believe{background:var(--black)}
+
+.believe-split{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:0;align-items:stretch;min-height:560px;
+  border-radius:4px;overflow:hidden;margin-bottom:80px;
+}
+.believe-art{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#1a0044 0%,#2d006e 35%,#0a1628 65%,#001a0a 100%);
+  min-height:480px;
+}
+.believe-art-grain{position:absolute;inset:0;z-index:1;opacity:.2;mix-blend-mode:screen;pointer-events:none}
+.believe-art-text{
+  position:absolute;bottom:48px;left:48px;right:48px;z-index:2;
+}
+.believe-pull{
+  font-family:'Playfair Display',serif;
+  font-style:italic;font-size:clamp(22px,2.8vw,32px);
+  line-height:1.35;color:var(--cream);font-weight:400;
+}
+.believe-pull::before{
+  content:'\201C';font-size:96px;line-height:.4;
+  display:block;color:var(--green);opacity:.5;margin-bottom:12px;
+  font-style:normal;
+}
+.believe-art-rule{
+  width:48px;height:3px;background:var(--green);margin-bottom:20px;
+}
+
+.believe-text{
+  background:#111;
+  padding:64px 56px;
+  border-left:1px solid var(--rule);
+}
+.believe-headline{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,3vw,48px);font-weight:700;
+  line-height:1.1;letter-spacing:-.02em;
+  margin-bottom:20px;
+}
+.believe-body{
+  font-size:15px;line-height:1.85;
+  color:rgba(245,240,232,.6);font-weight:300;
+  margin-bottom:32px;
+}
+.believe-body::first-letter{
+  font-family:'Playfair Display',serif;
+  font-size:52px;font-weight:700;
+  float:left;line-height:.85;margin-right:8px;margin-top:6px;
+  color:var(--green);
+}
+
+/* Conviction cards */
+.conviction-cards{
+  display:flex;flex-direction:column;gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  border-radius:4px;overflow:hidden;
+}
+.conviction-card{
+  background:#0f0f0f;
+  padding:40px 48px;
+  display:grid;grid-template-columns:auto 1fr;
+  gap:0 40px;
+  align-items:start;
+  transition:background .2s;
+}
+.conviction-card:hover{background:#141414}
+.conviction-num{
+  font-family:'Playfair Display',serif;
+  font-size:80px;font-weight:900;line-height:.85;
+  letter-spacing:-.04em;
+  opacity:.07;
+  color:var(--cream);
+  padding-top:8px;
+  user-select:none;
+}
+.conviction-body{}
+.conviction-kicker{
+  font-size:10px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--green);margin-bottom:10px;
+}
+.conviction-headline{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(22px,2.2vw,30px);font-weight:700;
+  line-height:1.15;letter-spacing:-.02em;
+  margin-bottom:14px;
+  color:var(--cream);
+}
+.conviction-prose{
+  font-size:15px;line-height:1.8;
+  color:rgba(245,240,232,.55);
+  font-weight:300;
+  max-width:640px;
+}
+
+/* ── WHAT WE'RE CHANGING ──────────────────────────── */
+.changing{
+  background:var(--cream);
+  color:var(--black);
+}
+.changing-headline{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,5vw,72px);font-weight:700;
+  line-height:1.05;letter-spacing:-.03em;
+  margin-bottom:12px;
+  color:var(--black);
+}
+.changing-sub{
+  font-size:17px;font-weight:300;color:#555;
+  margin-bottom:64px;max-width:580px;line-height:1.7;
+}
+.changing-sub::first-letter{
+  font-family:'Playfair Display',serif;
+  font-size:52px;font-weight:700;
+  float:left;line-height:.85;margin-right:8px;margin-top:6px;
+  color:var(--black);
+}
+
+.shift-cards{
+  display:flex;flex-direction:column;gap:2px;
+  background:rgba(0,0,0,.08);
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:4px;overflow:hidden;
+}
+.shift-card{
+  background:var(--cream);
+  display:grid;grid-template-columns:1fr 64px 1fr;
+  gap:0;align-items:stretch;
+}
+.shift-from-half{
+  padding:40px 40px 40px 48px;
+  border-right:1px solid rgba(0,0,0,.08);
+  position:relative;
+}
+.shift-from-half::before{
+  content:'FROM';
+  font-size:9px;font-weight:800;letter-spacing:.25em;
+  color:rgba(200,80,80,.6);
+  display:block;margin-bottom:12px;
+}
+.shift-from-text{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:700;
+  line-height:1.2;color:#333;
+  margin-bottom:10px;
+}
+.shift-from-desc{
+  font-size:13px;color:#888;line-height:1.65;font-weight:300;
+}
+
+.shift-mid-arrow{
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.03);
+  color:#999;font-size:20px;
+  border-right:1px solid rgba(0,0,0,.08);
+}
+
+.shift-to-half{
+  padding:40px 48px 40px 40px;
+  background:rgba(29,185,84,.04);
+  transition:background .2s;
+  position:relative;
+}
+.shift-card:hover .shift-to-half{background:rgba(29,185,84,.08)}
+.shift-to-half::before{
+  content:'TO';
+  font-size:9px;font-weight:800;letter-spacing:.25em;
+  color:rgba(29,185,84,.7);
+  display:block;margin-bottom:12px;
+}
+.shift-to-text{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:700;
+  line-height:1.2;color:var(--black);
+  margin-bottom:10px;
+}
+.shift-to-desc{
+  font-size:13px;color:#555;line-height:1.65;font-weight:400;
+}
+
+/* ── THE DIRECTION ────────────────────────────────── */
+.direction{
+  background:#000;
+  padding:120px 60px;
+  position:relative;overflow:hidden;
+}
+.dir-bg-word{
+  position:absolute;
+  font-family:'Playfair Display',serif;
+  font-size:280px;font-weight:900;
+  color:rgba(255,255,255,.013);
+  letter-spacing:-.05em;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  white-space:nowrap;pointer-events:none;
+  z-index:0;
+  user-select:none;
+}
+.direction-inner{
+  max-width:var(--max);margin:0 auto;
+  position:relative;z-index:1;
+}
+.direction-headline{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,5vw,72px);font-weight:700;
+  line-height:1.05;letter-spacing:-.03em;
+  margin-bottom:16px;
+}
+.direction-sub{
+  font-size:16px;font-weight:300;color:#555;
+  margin-bottom:72px;max-width:560px;line-height:1.7;
+}
+
+.output-lines{
+  display:flex;flex-direction:column;gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  border-radius:4px;overflow:hidden;
+  margin-bottom:88px;
+}
+.output-line{
+  background:#0a0a0a;
+  padding:32px 48px;
+  display:flex;align-items:baseline;gap:24px;
+  transition:background .2s;
+}
+.output-line:hover{background:#111}
+.output-line-num{
+  font-family:'Playfair Display',serif;
+  font-size:13px;font-weight:700;
+  color:var(--green);opacity:.5;
+  flex-shrink:0;width:32px;
+}
+.output-line-text{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(20px,2.2vw,28px);font-weight:700;
+  line-height:1.25;color:var(--cream);letter-spacing:-.01em;
+}
+.output-line-text em{
+  font-style:normal;color:rgba(245,240,232,.45);
+  font-size:.75em;font-weight:400;
+  font-family:'DM Sans',sans-serif;
+  letter-spacing:0;
+  display:block;margin-top:6px;line-height:1.5;
+}
+
+.closing-centrespread{
+  border-top:1px solid #1a1a1a;
+  padding-top:72px;
+  text-align:center;
+}
+.closing-stamp{
+  font-size:10px;font-weight:700;letter-spacing:.25em;
+  text-transform:uppercase;color:#333;
+  margin-bottom:32px;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+}
+.closing-stamp::before,.closing-stamp::after{content:'';width:40px;height:1px;background:#2a2a2a}
+.closing-statement{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:clamp(28px,3.5vw,52px);
+  font-weight:700;
+  line-height:1.3;
+  color:var(--cream);
+  max-width:820px;margin:0 auto 40px;
+  letter-spacing:-.01em;
+}
+.closing-statement .green{color:var(--green);font-style:normal}
+.closing-attr{
+  font-size:11px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:#333;
+}
+.mag-footer{
+  border-top:1px solid #1a1a1a;padding:24px 0 0;margin-top:48px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#2a2a2a;font-weight:500;
+}
+
+/* ── ANIMATIONS ───────────────────────────────────── */
+.anim{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .7s cubic-bezier(.25,.46,.45,.94), transform .7s cubic-bezier(.25,.46,.45,.94);
+}
+.anim.visible{opacity:1;transform:none}
+.anim-left{
+  opacity:0;transform:translateX(-32px);
+  transition:opacity .7s, transform .7s;
+}
+.anim-left.visible{opacity:1;transform:none}
+
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+</style>
+</head>
+<body>
+
+<!-- SVG grain filter -->
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <filter id="grain-f" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" result="noiseOut"/>
+      <feColorMatrix type="saturate" values="0" in="noiseOut" result="grey"/>
+      <feBlend in="SourceGraphic" in2="grey" mode="overlay" result="blend"/>
+      <feComposite in="blend" in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ══ FIXED NAV ══════════════════════════════════ -->
+<nav class="mag-nav" id="magNav">
+  <div class="mag-nav-inner">
+    <a href="#cover" class="mag-logo">EDITORIAL<span> ·</span></a>
+    <div class="nav-links">
+      <a href="#believe" class="nav-link" data-sec="believe">What We Believe</a>
+      <a href="#changing" class="nav-link" data-sec="changing">What We're Changing</a>
+      <a href="#direction" class="nav-link" data-sec="direction">The Direction</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ COVER ══════════════════════════════════════ -->
+<section id="cover" class="cover">
+  <div class="cover-bg"></div>
+  <div class="cover-grain">
+    <svg width="100%" height="100%"><filter id="g1"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g1)" opacity="1"/></svg>
+  </div>
+  <div class="cover-inner">
+    <div class="cover-masthead">
+      <div class="cover-masthead-name">Editorial</div>
+      <div class="cover-meta">
+        Issue 03 · April 2026<br>
+        India · Spotify India Editorial<br>
+        Presented to Sulinna Ong
+      </div>
+    </div>
+    <div class="cover-body">
+      <div class="cover-hl">
+        <span class="line1">Curators</span>
+        <span class="line2">of Culture.</span>
+        <span class="line3">Not playlists.</span>
+      </div>
+      <p class="cover-sub">What we believe, what we're changing, and where India Editorial is headed.</p>
+      <div class="cover-byline">India Editorial · Unni Nambudripad · April 2026</div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-ticker">
+      <div class="ticker-inner">
+        WHAT WE BELIEVE &nbsp;·&nbsp; WHAT WE'RE CHANGING &nbsp;·&nbsp; THE DIRECTION &nbsp;·&nbsp; INDIA EDITORIAL 2026 &nbsp;·&nbsp; EXCLUSIVE &nbsp;·&nbsp; WHAT WE BELIEVE &nbsp;·&nbsp; WHAT WE'RE CHANGING &nbsp;·&nbsp; THE DIRECTION &nbsp;·&nbsp; INDIA EDITORIAL 2026 &nbsp;·&nbsp; EXCLUSIVE &nbsp;·&nbsp;
+      </div>
+    </div>
+    <div class="scroll-cue">Scroll to read <div class="scroll-arrow">↓</div></div>
+  </div>
+</section>
+
+<!-- ══ TABLE OF CONTENTS ══════════════════════════ -->
+<section class="toc" id="toc">
+  <div class="toc-inner">
+    <div class="toc-header">
+      <span class="toc-label">Contents</span>
+      <span class="toc-issue">Issue 03 · April 2026 · India Editorial</span>
+    </div>
+    <div class="toc-grid">
+      <div class="toc-entries">
+        <a href="#believe" class="toc-entry">
+          <div class="toc-page">04</div>
+          <div>
+            <div class="toc-entry-section">Conviction</div>
+            <div class="toc-entry-title">What We Believe</div>
+            <div class="toc-entry-desc">Three convictions that define how India Editorial thinks about its role in music and culture</div>
+          </div>
+        </a>
+        <a href="#changing" class="toc-entry">
+          <div class="toc-page">12</div>
+          <div>
+            <div class="toc-entry-section">Direction</div>
+            <div class="toc-entry-title">What We're Changing</div>
+            <div class="toc-entry-desc">Three clear shifts — from how we programme to how we show up in the culture</div>
+          </div>
+        </a>
+        <a href="#direction" class="toc-entry">
+          <div class="toc-page">20</div>
+          <div>
+            <div class="toc-entry-section">Output</div>
+            <div class="toc-entry-title">The Direction</div>
+            <div class="toc-entry-desc">What this adds up to — a view of where India Editorial is headed, and what winning looks like</div>
+          </div>
+        </a>
+      </div>
+      <div class="editors-letter anim">
+        <div class="letter-label">Editor's Letter</div>
+        <p class="letter-body">India is not just a market. It is a musical civilisation — one that is too complex, too alive, and too culturally specific to be served by any single editorial approach. This conversation is about how we see our role, what we're choosing to change, and where we're pointed. Not a strategy document. A point of view.</p>
+        <div class="letter-sig">Unni Nambudripad</div>
+        <div class="letter-title">India Editorial Lead, Spotify</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHAT WE BELIEVE ════════════════════════════ -->
+<section id="believe" class="mag-section believe">
+  <div class="mag-section-inner">
+    <div class="section-stamp anim">Conviction · 3 min read</div>
+
+    <div class="believe-split anim d1">
+      <div class="believe-art">
+        <div class="believe-art-grain">
+          <svg width="100%" height="100%"><filter id="g2"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#g2)" opacity="0.8"/></svg>
+        </div>
+        <div class="believe-art-text">
+          <div class="believe-art-rule"></div>
+          <div class="believe-pull">We don't reflect culture.<br>We shape it.</div>
+        </div>
+      </div>
+      <div class="believe-text">
+        <h2 class="believe-headline">What We Believe</h2>
+        <p class="believe-body">Every editorial team has an opinion about what music is worth hearing. The question is whether that opinion is reactive or formative. India Editorial's job is to hold the formative view — to have the convictions that other people eventually catch up to.</p>
+      </div>
+    </div>
+
+    <div class="conviction-cards anim d2">
+
+      <div class="conviction-card">
+        <div class="conviction-num">01</div>
+        <div class="conviction-body">
+          <div class="conviction-kicker">Demand-shaping, not reflection</div>
+          <div class="conviction-headline">We shape demand. We don't reflect it.</div>
+          <p class="conviction-prose">India Editorial's role is not to surface what's already popular — it's to create the conditions for what becomes popular. The best editorial work happens ahead of the curve, not behind it. When a playlist becomes a cultural reference point, that's the job done right.</p>
+        </div>
+      </div>
+
+      <div class="conviction-card">
+        <div class="conviction-num">02</div>
+        <div class="conviction-body">
+          <div class="conviction-kicker">Programming, narrative, and ecosystem</div>
+          <div class="conviction-headline">The playlist is a container. What lives inside it is what matters.</div>
+          <p class="conviction-prose">Great editorial goes beyond curation into cultural authorship. The narrative, the voice, the context we build around a playlist — that's the product. A collection of tracks is a library. An editorial point of view is a statement.</p>
+        </div>
+      </div>
+
+      <div class="conviction-card">
+        <div class="conviction-num">03</div>
+        <div class="conviction-body">
+          <div class="conviction-kicker">Catalogue, language, and cultural context</div>
+          <div class="conviction-headline">India listens in layers. We programme the same way.</div>
+          <p class="conviction-prose">Sustained listening in India isn't driven by new releases alone. It lives in catalogue — in the regional identities, the music tied to memory, season, ceremony, and community. Hindi, Punjabi, Tamil, Telugu are not interchangeable. Each is a distinct world. We programme them that way.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHAT WE'RE CHANGING ═════════════════════════ -->
+<section id="changing" class="mag-section changing">
+  <div class="mag-section-inner">
+    <div class="section-stamp anim" style="color:#888">Direction · 3 min read</div>
+    <h2 class="changing-headline anim d1">What We're<br>Changing.</h2>
+    <p class="changing-sub anim d2">Three shifts. Each one is a choice about where to place our editorial weight — and what to leave behind.</p>
+
+    <div class="shift-cards anim d3">
+
+      <div class="shift-card">
+        <div class="shift-from-half">
+          <div class="shift-from-text">Release-led programming</div>
+          <div class="shift-from-desc">Editorial calendar driven by what's dropping this week. More playlists, less meaning per playlist.</div>
+        </div>
+        <div class="shift-mid-arrow">→</div>
+        <div class="shift-to-half">
+          <div class="shift-to-text">Intention-led programming</div>
+          <div class="shift-to-desc">Fewer playlists, each one with a clear reason to exist. We programme with a purpose, not a release date. Quality of editorial judgement over quantity of surfaces.</div>
+        </div>
+      </div>
+
+      <div class="shift-card">
+        <div class="shift-from-half">
+          <div class="shift-from-text">Surface coverage</div>
+          <div class="shift-from-desc">Treating language markets as segments to be served rather than worlds to be owned.</div>
+        </div>
+        <div class="shift-mid-arrow">→</div>
+        <div class="shift-to-half">
+          <div class="shift-to-text">Language ecosystem ownership</div>
+          <div class="shift-to-desc">Hindi, Punjabi, Tamil, Telugu each get a dedicated editorial identity — not just localised content, but a genuine point of view about what that culture sounds like on Spotify.</div>
+        </div>
+      </div>
+
+      <div class="shift-card">
+        <div class="shift-from-half">
+          <div class="shift-from-text">Reactive storytelling</div>
+          <div class="shift-from-desc">Amplifying cultural moments after they've already happened. Coverage, not creation.</div>
+        </div>
+        <div class="shift-mid-arrow">→</div>
+        <div class="shift-to-half">
+          <div class="shift-to-text">Proactive cultural narrative</div>
+          <div class="shift-to-desc">An editorial voice that anticipates moments and shapes conversations. We don't comment on culture — we participate in it, and sometimes we start it.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ THE DIRECTION ══════════════════════════════ -->
+<section id="direction" class="direction">
+  <div class="dir-bg-word">Direction</div>
+  <div class="direction-inner">
+    <div class="section-stamp anim" style="color:#333">Output · Where This Points</div>
+    <h2 class="direction-headline anim d1">The Direction.</h2>
+    <p class="direction-sub anim d2">What these beliefs and shifts add up to — not a list of deliverables, but a view of where India Editorial is headed.</p>
+
+    <div class="output-lines anim d2">
+
+      <div class="output-line">
+        <div class="output-line-num">—</div>
+        <div class="output-line-text">
+          A team operating with editorial conviction.
+          <em>Every decision has a reason. Not just a reason to add — but a reason to leave things out.</em>
+        </div>
+      </div>
+
+      <div class="output-line">
+        <div class="output-line-num">—</div>
+        <div class="output-line-text">
+          Sharper prioritisation.
+          <em>The discipline to do less, better. Fewer surfaces with more meaning each.</em>
+        </div>
+      </div>
+
+      <div class="output-line">
+        <div class="output-line-num">—</div>
+        <div class="output-line-text">
+          A clear editorial identity for India that Spotify owns in the market.
+          <em>Not a brand that borrowed cultural credibility — one that earned it, playlist by playlist.</em>
+        </div>
+      </div>
+
+      <div class="output-line">
+        <div class="output-line-num">—</div>
+        <div class="output-line-text">
+          Language ecosystems that feel like destinations.
+          <em>Places listeners come back to — not because the algorithm sent them, but because they trust the voice.</em>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="closing-centrespread anim d3">
+      <div class="closing-stamp">The 2028 Horizon</div>
+      <div class="closing-statement">
+        "By 2028, India Editorial will decide what <span class="green">breaks</span>, what <span class="green">scales</span>, and what <span class="green">travels beyond borders</span>."
+      </div>
+      <div class="closing-attr">India Editorial Strategy 2026 · Spotify India</div>
+      <div class="mag-footer">
+        <span>EDITORIAL · Issue 03 · April 2026</span>
+        <span>A Spotify India Editorial Publication</span>
+        <span>Presented to Sulinna Ong, Global Head of Editorial</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ── Scroll animations ──────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.anim, .anim-left').forEach(el => observer.observe(el));
+
+// ── Scrollspy ─────────────────────────────────────
+const sections = ['believe','changing','direction'];
+const navLinks = document.querySelectorAll('.nav-link');
+
+const spyObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navLinks.forEach(l => {
+        l.classList.toggle('active', l.dataset.sec === id);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) spyObserver.observe(el);
+});
+
+// ── Nav border on scroll ───────────────────────────
+const nav = document.getElementById('magNav');
+window.addEventListener('scroll', () => {
+  nav.style.borderBottomColor = window.scrollY > 80 ? 'rgba(255,255,255,.06)' : 'rgba(42,42,42,1)';
+}, { passive: true });
+
+// ── Smooth scroll for anchor links ────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>

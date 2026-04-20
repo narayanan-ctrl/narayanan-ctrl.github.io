@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Editorial 2026 — Sizzle Reel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,700&family=DM+Sans:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#000;font-family:'DM Sans',sans-serif;color:#fff}
+
+/* ── PRELOADER / START SCREEN ──────────────────── */
+#startScreen{
+  position:fixed;inset:0;z-index:1000;
+  background:#000;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:48px;
+  transition:opacity .8s ease, visibility .8s;
+}
+#startScreen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.start-logo{
+  font-family:'Playfair Display',serif;
+  font-size:18px;letter-spacing:.6em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+}
+.start-title{
+  text-align:center;
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,6vw,80px);
+  font-weight:900;line-height:1.05;letter-spacing:-.03em;
+}
+.start-title .green{color:#1DB954}
+.start-sub{
+  font-size:14px;color:rgba(255,255,255,.4);
+  letter-spacing:.1em;text-transform:uppercase;font-weight:500;
+  text-align:center;
+}
+.music-block{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  width:100%;max-width:500px;
+}
+.music-label{
+  font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+}
+.music-embeds{display:flex;flex-direction:column;gap:8px;width:100%}
+.music-embeds iframe{border-radius:8px}
+.start-btn{
+  background:#1DB954;color:#000;border:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;
+  padding:18px 48px;border-radius:40px;cursor:pointer;
+  transition:transform .15s, background .15s;
+  margin-top:8px;
+}
+.start-btn:hover{background:#1ed760;transform:scale(1.03)}
+.start-hint{
+  font-size:11px;color:rgba(255,255,255,.2);
+  letter-spacing:.08em;text-align:center;
+  max-width:320px;line-height:1.6;
+}
+
+/* ── REEL STAGE ─────────────────────────────────── */
+#stage{
+  position:fixed;inset:0;z-index:1;
+  background:#000;overflow:hidden;
+}
+
+/* ── PROGRESS BAR ───────────────────────────────── */
+#progressBar{
+  position:fixed;bottom:0;left:0;right:0;
+  height:3px;z-index:500;background:rgba(255,255,255,.1);
+}
+#progressFill{
+  height:100%;background:#1DB954;width:0%;
+  transition:width .1s linear;
+}
+
+/* ── CONTROLS ───────────────────────────────────── */
+#controls{
+  position:fixed;bottom:16px;right:24px;
+  z-index:500;display:flex;gap:12px;align-items:center;
+  opacity:0;transition:opacity .3s;
+}
+#controls.visible{opacity:1}
+.ctrl{
+  background:rgba(255,255,255,.1);border:none;color:#fff;
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;transition:background .15s;
+  backdrop-filter:blur(8px);
+}
+.ctrl:hover{background:rgba(255,255,255,.2)}
+
+/* ── SCENE BASE ─────────────────────────────────── */
+.scene{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .6s cubic-bezier(.4,0,.2,1);
+}
+.scene.active{opacity:1;pointer-events:auto}
+
+/* ── SCENE ELEMENTS ─────────────────────────────── */
+.s-eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-bottom:16px;
+  opacity:0;transform:translateY(12px);transition:all .5s .2s;
+}
+.s-big{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(56px,9vw,130px);
+  font-weight:900;line-height:.95;letter-spacing:-.04em;
+  text-align:center;
+  opacity:0;transform:translateY(24px) scale(.96);
+  transition:all .7s .1s cubic-bezier(.25,.46,.45,.94);
+}
+.s-medium{
+  font-family:'DM Sans',sans-serif;
+  font-size:clamp(28px,4vw,52px);
+  font-weight:700;line-height:1.1;letter-spacing:-.02em;
+  text-align:center;
+  opacity:0;transform:translateY(20px);
+  transition:all .6s .15s;
+}
+.s-body{
+  font-size:clamp(16px,1.8vw,22px);font-weight:300;
+  color:rgba(255,255,255,.6);text-align:center;
+  max-width:640px;line-height:1.6;margin-top:16px;
+  opacity:0;transform:translateY(16px);
+  transition:all .6s .35s;
+}
+.s-stat{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(80px,12vw,160px);
+  font-weight:900;line-height:1;letter-spacing:-.05em;
+  text-align:center;
+  opacity:0;transform:scale(.8);
+  transition:all .6s cubic-bezier(.34,1.56,.64,1);
+}
+.s-label{
+  font-size:13px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.4);
+  text-align:center;margin-top:8px;
+  opacity:0;transition:all .5s .4s;
+}
+
+/* Active scene reveals */
+.scene.active .s-eyebrow,
+.scene.active .s-body,
+.scene.active .s-label{opacity:1;transform:none}
+.scene.active .s-big{opacity:1;transform:none}
+.scene.active .s-medium{opacity:1;transform:none}
+.scene.active .s-stat{opacity:1;transform:scale(1)}
+
+/* Colors */
+.green{color:#1DB954}
+.gold{color:#FFD700}
+.muted{color:rgba(255,255,255,.35)}
+.strike{text-decoration:line-through;color:rgba(255,255,255,.2)}
+
+/* ── SCENE-SPECIFIC BGs ─────────────────────────── */
+
+/* 01 — Black with grain */
+#s01{background:#000}
+#s01::before{
+  content:'';position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 50%, rgba(29,185,84,.07) 0%, transparent 70%);
+}
+
+/* 02 — Deep purple pulse */
+#s02{background:radial-gradient(ellipse 100% 100% at 50% 50%, #1a0033 0%, #000 100%)}
+
+/* 03 — Stat card */
+#s03{background:#000}
+#s03::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle 400px at 25% 50%, rgba(29,185,84,.08) 0%, transparent 60%),
+    radial-gradient(circle 400px at 75% 50%, rgba(29,185,84,.05) 0%, transparent 60%);
+}
+
+/* 04 */
+#s04{background:#000}
+
+/* 05 — Tools/team/ambition — split reveal */
+#s05{background:#0a0a0a}
+.tools-stack{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.tools-line{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(48px,7vw,96px);font-weight:900;
+  letter-spacing:-.03em;line-height:1;
+  opacity:0;transform:translateX(-40px);
+  transition:all .5s;
+}
+.tools-line:nth-child(1){transition-delay:.1s}
+.tools-line:nth-child(2){transition-delay:.35s}
+.tools-line:nth-child(3){transition-delay:.6s}
+.scene.active .tools-line{opacity:1;transform:none}
+
+/* 06 — Editorial 3.0 glow */
+#s06{
+  background:radial-gradient(ellipse 80% 80% at 50% 50%, #001a08 0%, #000 100%);
+}
+#s06 .s-big{
+  text-shadow:0 0 60px rgba(29,185,84,.4), 0 0 120px rgba(29,185,84,.15);
+}
+
+/* 07 — Timeline */
+#s07{background:#0a0a0a}
+.evo-pills{
+  display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:700px;
+}
+.evo-pill{
+  width:100%;padding:12px 24px;border-radius:4px;
+  font-size:14px;font-weight:600;letter-spacing:.02em;
+  display:flex;align-items:center;justify-content:between;gap:16px;
+  opacity:0;transform:translateX(-24px);transition:all .4s;
+}
+.evo-pill .pill-ver{
+  font-size:10px;font-weight:800;letter-spacing:.1em;
+  padding:3px 8px;border-radius:20px;flex-shrink:0;margin-left:auto;
+}
+.evo-pill.v1{background:rgba(255,255,255,.05);color:#555}
+.evo-pill.v1 .pill-ver{background:rgba(255,255,255,.08);color:#555}
+.evo-pill.v2{background:rgba(100,149,237,.1);color:#6495ED}
+.evo-pill.v2 .pill-ver{background:rgba(100,149,237,.15);color:#6495ED}
+.evo-pill.v3{background:rgba(29,185,84,.15);color:#1DB954}
+.evo-pill.v3 .pill-ver{background:rgba(29,185,84,.2);color:#1DB954}
+.scene.active .evo-pill:nth-child(1){opacity:1;transform:none;transition-delay:.1s}
+.scene.active .evo-pill:nth-child(2){opacity:1;transform:none;transition-delay:.25s}
+.scene.active .evo-pill:nth-child(3){opacity:1;transform:none;transition-delay:.4s}
+.scene.active .evo-pill:nth-child(4){opacity:1;transform:none;transition-delay:.55s}
+
+/* 08 — "We will remain..." */
+#s08{background:#000}
+
+/* 09 — "Of Culture" */
+#s09{background:radial-gradient(ellipse 70% 70% at 50% 50%, #001a08 0%, #000 100%)}
+#s09 .s-big{color:#1DB954;text-shadow:0 0 80px rgba(29,185,84,.3)}
+
+/* 10 — Strikethrough */
+#s10{background:#000}
+
+/* 11 — SPOT SHAPE SHOW SCALE */
+#s11{background:#0a0a0a}
+.four-s-reel{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:2px;width:100%;max-width:900px;
+}
+.fs-item{
+  padding:32px 24px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  opacity:0;transform:translateY(24px);transition:all .5s;
+}
+.fs-item:nth-child(1){transition-delay:.1s}
+.fs-item:nth-child(2){transition-delay:.25s}
+.fs-item:nth-child(3){transition-delay:.4s}
+.fs-item:nth-child(4){transition-delay:.55s}
+.scene.active .fs-item{opacity:1;transform:none}
+.fs-letter{
+  font-family:'Playfair Display',serif;
+  font-size:64px;font-weight:900;line-height:.9;letter-spacing:-.04em;
+}
+.fs-name{font-size:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.fs-item:nth-child(1) .fs-letter,.fs-item:nth-child(1) .fs-name{color:#FFD700}
+.fs-item:nth-child(2) .fs-letter,.fs-item:nth-child(2) .fs-name{color:#1DB954}
+.fs-item:nth-child(3) .fs-letter,.fs-item:nth-child(3) .fs-name{color:#6495ED}
+.fs-item:nth-child(4) .fs-letter,.fs-item:nth-child(4) .fs-name{color:#FF8C00}
+
+/* 12 — IPs */
+#s12{background:#000}
+.ip-list{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.ip-name{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,5vw,64px);font-weight:900;
+  letter-spacing:-.03em;line-height:1.1;
+  opacity:0;transform:translateY(16px);transition:all .45s;
+  color:rgba(255,255,255,.15);
+  cursor:default;
+}
+.ip-name.lit{color:#fff}
+.scene.active .ip-name:nth-child(1){opacity:1;transform:none;transition-delay:.1s}
+.scene.active .ip-name:nth-child(2){opacity:1;transform:none;transition-delay:.25s}
+.scene.active .ip-name:nth-child(3){opacity:1;transform:none;transition-delay:.4s}
+.scene.active .ip-name:nth-child(4){opacity:1;transform:none;transition-delay:.55s}
+
+/* 13 — Language stats */
+#s13{background:#0a0a0a}
+.lang-stats{
+  display:flex;flex-direction:column;gap:12px;
+  width:100%;max-width:600px;
+}
+.lang-row{
+  display:flex;align-items:center;gap:16px;
+  opacity:0;transform:translateX(-20px);transition:all .4s;
+}
+.lang-row-name{font-size:14px;font-weight:700;width:90px;flex-shrink:0}
+.lang-row-bar{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.lang-row-fill{height:100%;background:linear-gradient(90deg,#1DB954,#0d7a33);border-radius:2px;width:0%;transition:width 1s .5s ease}
+.lang-row-pct{font-size:14px;font-weight:800;width:40px;text-align:right;flex-shrink:0}
+.scene.active .lang-row:nth-child(1){opacity:1;transform:none;transition-delay:.1s}
+.scene.active .lang-row:nth-child(2){opacity:1;transform:none;transition-delay:.2s}
+.scene.active .lang-row:nth-child(3){opacity:1;transform:none;transition-delay:.3s}
+.scene.active .lang-row:nth-child(4){opacity:1;transform:none;transition-delay:.4s}
+.scene.active .lang-row:nth-child(5){opacity:1;transform:none;transition-delay:.5s}
+.scene.active .lang-row-fill{width:var(--w)}
+
+/* 14 — 5 Projects */
+#s14{background:#0a0a0a}
+.proj-list-reel{
+  display:flex;flex-direction:column;gap:8px;width:100%;max-width:680px;
+}
+.proj-item-reel{
+  display:flex;align-items:center;gap:16px;padding:12px 20px;
+  border:1px solid rgba(255,255,255,.06);border-radius:4px;
+  opacity:0;transform:translateX(-20px);transition:all .4s;
+}
+.proj-item-reel .proj-icon{font-size:20px;flex-shrink:0}
+.proj-item-reel h3{font-size:16px;font-weight:700}
+.proj-item-reel p{font-size:12px;color:rgba(255,255,255,.4);font-style:italic;margin-top:2px}
+.scene.active .proj-item-reel:nth-child(1){opacity:1;transform:none;transition-delay:.1s}
+.scene.active .proj-item-reel:nth-child(2){opacity:1;transform:none;transition-delay:.22s}
+.scene.active .proj-item-reel:nth-child(3){opacity:1;transform:none;transition-delay:.34s}
+.scene.active .proj-item-reel:nth-child(4){opacity:1;transform:none;transition-delay:.46s}
+.scene.active .proj-item-reel:nth-child(5){opacity:1;transform:none;transition-delay:.58s}
+
+/* 15 — By 2028 */
+#s15{background:#000}
+
+/* 16 — What breaks/scales/travels */
+#s16{background:#000}
+.three-line{display:flex;flex-direction:column;align-items:center;gap:4px}
+.three-item{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,4vw,52px);font-weight:700;
+  letter-spacing:-.02em;line-height:1.1;text-align:center;
+  opacity:0;transform:translateY(20px);transition:all .5s;
+  color:rgba(255,255,255,.25);
+}
+.three-item.lit{color:#FFD700}
+.scene.active .three-item:nth-child(1){opacity:1;transform:none;transition-delay:.1s}
+.scene.active .three-item:nth-child(2){opacity:1;transform:none;transition-delay:.3s}
+.scene.active .three-item:nth-child(3){opacity:1;transform:none;transition-delay:.5s}
+
+/* 17 — End card */
+#s17{
+  background:radial-gradient(ellipse 80% 60% at 50% 40%, #001a08 0%, #000 100%);
+}
+.end-logo{
+  font-family:'Playfair Display',serif;
+  font-size:18px;letter-spacing:.5em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-bottom:24px;
+  opacity:0;transition:all .5s .1s;
+}
+.end-headline{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(48px,7vw,96px);font-weight:900;
+  line-height:.95;letter-spacing:-.04em;text-align:center;
+  opacity:0;transform:translateY(24px);transition:all .8s .2s;
+}
+.end-sub{
+  font-size:14px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);text-align:center;margin-top:24px;
+  opacity:0;transition:all .5s .6s;
+}
+.end-credit{
+  font-size:11px;color:rgba(255,255,255,.2);
+  letter-spacing:.1em;text-transform:uppercase;
+  text-align:center;margin-top:40px;
+  opacity:0;transition:all .5s .9s;
+}
+.scene.active .end-logo,
+.scene.active .end-sub,
+.scene.active .end-credit{opacity:1;transform:none}
+.scene.active .end-headline{opacity:1;transform:none}
+
+/* Replay button */
+#replayBtn{
+  margin-top:32px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  color:#fff;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  padding:12px 28px;border-radius:20px;cursor:pointer;
+  opacity:0;transition:all .5s 1.2s, background .15s;
+}
+#replayBtn:hover{background:rgba(255,255,255,.2)}
+.scene.active #replayBtn{opacity:1}
+
+/* Scene counter */
+#sceneCounter{
+  position:fixed;bottom:24px;left:24px;z-index:500;
+  font-size:11px;font-weight:700;letter-spacing:.15em;
+  color:rgba(255,255,255,.2);
+  opacity:0;transition:opacity .3s;
+}
+#sceneCounter.visible{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ══ START SCREEN ══════════════════════════════ -->
+<div id="startScreen">
+  <div class="start-logo">Spotify · India Editorial</div>
+
+  <div class="start-title">
+    India Editorial<br>
+    <span class="green">2026.</span>
+  </div>
+  <div class="start-sub">Press play on the music, then start the reel</div>
+
+  <div class="music-block">
+    <div class="music-label">🎵 Music — Dhurandhar Soundtrack</div>
+    <div class="music-embeds">
+      <iframe style="border-radius:8px" src="https://open.spotify.com/embed/track/1ifI8ipBJreNmLDYigFc6d?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      <iframe style="border-radius:8px" src="https://open.spotify.com/embed/track/3KbleHKW2Z0eFVcW1VcHFB?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="startReel()">▶ Start Reel</button>
+  <p class="start-hint">Hit play on either track above first, then start the reel for music + visuals together. Best viewed fullscreen.</p>
+</div>
+
+<!-- ══ STAGE ═════════════════════════════════════ -->
+<div id="stage">
+
+  <!-- Scene 01 — Logo reveal -->
+  <div class="scene" id="s01">
+    <div class="s-eyebrow">Spotify · India Editorial · April 2026</div>
+    <div class="s-big" style="font-size:clamp(32px,5vw,72px);letter-spacing:.4em">EDITORIAL</div>
+    <div class="s-body">India's culture magazine</div>
+  </div>
+
+  <!-- Scene 02 — India intro -->
+  <div class="scene" id="s02">
+    <div class="s-big">India.</div>
+    <div class="s-body">The world's most complex, most beautiful, most contested music market.</div>
+  </div>
+
+  <!-- Scene 03 — Scale stats -->
+  <div class="scene" id="s03">
+    <div style="display:flex;gap:64px;align-items:flex-end;position:relative;z-index:1">
+      <div style="text-align:center">
+        <div class="s-stat green">1B+</div>
+        <div class="s-label">Listeners</div>
+      </div>
+      <div style="text-align:center">
+        <div class="s-stat" style="color:#FFD700">12+</div>
+        <div class="s-label">Languages</div>
+      </div>
+      <div style="text-align:center">
+        <div class="s-stat" style="color:#6495ED">30+</div>
+        <div class="s-label">Genres</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 04 — "And for the first time..." -->
+  <div class="scene" id="s04">
+    <div class="s-medium muted">And for the first time...</div>
+  </div>
+
+  <!-- Scene 05 — Tools/Team/Ambition -->
+  <div class="scene" id="s05">
+    <div class="tools-stack">
+      <div class="tools-line">The tools.</div>
+      <div class="tools-line green">The team.</div>
+      <div class="tools-line gold">The ambition.</div>
+    </div>
+  </div>
+
+  <!-- Scene 06 — Editorial 3.0 -->
+  <div class="scene" id="s06">
+    <div class="s-eyebrow">The evolution</div>
+    <div class="s-big green">Editorial 3.0</div>
+    <div class="s-body">The editor is no longer in the back room.</div>
+  </div>
+
+  <!-- Scene 07 — Evolution timeline -->
+  <div class="scene" id="s07">
+    <div class="s-eyebrow" style="margin-bottom:24px">The journey</div>
+    <div class="evo-pills">
+      <div class="evo-pill v1">1.0 &nbsp;·&nbsp; Listening to Unreleased Music <span class="pill-ver">1.0</span></div>
+      <div class="evo-pill v2">2.0 &nbsp;·&nbsp; Playlists · Brand Building · Data · AI DJ Prompts <span class="pill-ver">2.0</span></div>
+      <div class="evo-pill v2">2.0 &nbsp;·&nbsp; EQS Scoring · Watchfeeds · Promotions · The Drop <span class="pill-ver">2.0</span></div>
+      <div class="evo-pill v3">3.0 &nbsp;·&nbsp; Storytelling and Commentary ← NOW <span class="pill-ver">3.0</span></div>
+    </div>
+  </div>
+
+  <!-- Scene 08 — "We will remain Curators." -->
+  <div class="scene" id="s08">
+    <div class="s-big">We will remain<br>Curators.</div>
+  </div>
+
+  <!-- Scene 09 — "Of Culture." -->
+  <div class="scene" id="s09">
+    <div class="s-big">Of Culture.</div>
+  </div>
+
+  <!-- Scene 10 — "Not Playlists." -->
+  <div class="scene" id="s10">
+    <div class="s-big strike">Not Playlists.</div>
+  </div>
+
+  <!-- Scene 11 — SPOT SHAPE SHOW SCALE -->
+  <div class="scene" id="s11">
+    <div class="s-eyebrow" style="margin-bottom:32px">The framework</div>
+    <div class="four-s-reel">
+      <div class="fs-item">
+        <div class="fs-letter">S</div>
+        <div class="fs-name">Spot</div>
+      </div>
+      <div class="fs-item">
+        <div class="fs-letter">S</div>
+        <div class="fs-name">Shape</div>
+      </div>
+      <div class="fs-item">
+        <div class="fs-letter">S</div>
+        <div class="fs-name">Show</div>
+      </div>
+      <div class="fs-item">
+        <div class="fs-letter">S</div>
+        <div class="fs-name">Scale</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 12 — Playlist IPs -->
+  <div class="scene" id="s12">
+    <div class="s-eyebrow" style="margin-bottom:24px">Our flagship IPs</div>
+    <div class="ip-list">
+      <div class="ip-name">Rap 91</div>
+      <div class="ip-name">I-Pop Icons</div>
+      <div class="ip-name">Punjabi 101</div>
+      <div class="ip-name">Haryanvi 101</div>
+    </div>
+  </div>
+
+  <!-- Scene 13 — Language stats -->
+  <div class="scene" id="s13">
+    <div class="s-eyebrow" style="margin-bottom:32px">Language · stream share</div>
+    <div class="lang-stats">
+      <div class="lang-row"><span class="lang-row-name">Hindi</span><div class="lang-row-bar"><div class="lang-row-fill" style="--w:100%"></div></div><span class="lang-row-pct">37%</span></div>
+      <div class="lang-row"><span class="lang-row-name">English</span><div class="lang-row-bar"><div class="lang-row-fill" style="--w:43%"></div></div><span class="lang-row-pct">16%</span></div>
+      <div class="lang-row"><span class="lang-row-name">Punjabi</span><div class="lang-row-bar"><div class="lang-row-fill" style="--w:40%"></div></div><span class="lang-row-pct">15%</span></div>
+      <div class="lang-row"><span class="lang-row-name">Tamil</span><div class="lang-row-bar"><div class="lang-row-fill" style="--w:24%"></div></div><span class="lang-row-pct">9%</span></div>
+      <div class="lang-row"><span class="lang-row-name">Haryanvi</span><div class="lang-row-bar"><div class="lang-row-fill" style="--w:5%;background:linear-gradient(90deg,#FFD700,#b8a000)"></div></div><span class="lang-row-pct gold">2% ↑</span></div>
+    </div>
+  </div>
+
+  <!-- Scene 14 — 5 Projects -->
+  <div class="scene" id="s14">
+    <div class="s-eyebrow" style="margin-bottom:24px">Five bets · 2026</div>
+    <div class="proj-list-reel">
+      <div class="proj-item-reel"><span class="proj-icon">🎬</span><div><h3>Film IP — New + Catalogue</h3><p>"The movie never ends on Spotify."</p></div></div>
+      <div class="proj-item-reel"><span class="proj-icon">🌾</span><div><h3>Haryanvi Flagship IP</h3><p>"The genre the mainstream hasn't caught up to yet."</p></div></div>
+      <div class="proj-item-reel"><span class="proj-icon">✈️</span><div><h3>Punjabi Export</h3><p>"Borders are just a playlist away."</p></div></div>
+      <div class="proj-item-reel"><span class="proj-icon">🙏</span><div><h3>Project Bhakti</h3><p>"Devotion has always been India's first music."</p></div></div>
+      <div class="proj-item-reel"><span class="proj-icon">🎻</span><div><h3>Project Echo</h3><p>"Classical music for the streaming generation."</p></div></div>
+    </div>
+  </div>
+
+  <!-- Scene 15 — "By 2028..." -->
+  <div class="scene" id="s15">
+    <div class="s-medium muted">By 2028...</div>
+    <div class="s-big gold" style="margin-top:8px">India Editorial<br>will decide.</div>
+  </div>
+
+  <!-- Scene 16 — What breaks / scales / travels -->
+  <div class="scene" id="s16">
+    <div class="three-line">
+      <div class="three-item lit">What breaks.</div>
+      <div class="three-item lit">What scales.</div>
+      <div class="three-item lit">What travels beyond borders.</div>
+    </div>
+  </div>
+
+  <!-- Scene 17 — End card -->
+  <div class="scene" id="s17">
+    <div class="end-logo">Editorial · Spotify India</div>
+    <div class="end-headline">
+      India Editorial<br>
+      Strategy <span class="green">2026.</span>
+    </div>
+    <div class="end-sub">Presented to Sulinna Ong · Global Head of Editorial</div>
+    <div class="end-credit">Unni Nambudripad · India Editorial Lead · April 2026</div>
+    <button id="replayBtn" onclick="replayReel()">↺ Replay</button>
+  </div>
+
+</div><!-- end #stage -->
+
+<!-- ══ PROGRESS + CONTROLS ═══════════════════════ -->
+<div id="progressBar"><div id="progressFill"></div></div>
+<div id="controls">
+  <button class="ctrl" id="btnPause" onclick="togglePause()" title="Pause/Play">⏸</button>
+  <button class="ctrl" onclick="prevScene()" title="Previous">←</button>
+  <button class="ctrl" onclick="nextScene()" title="Next">→</button>
+</div>
+<div id="sceneCounter" id="sceneCounter"></div>
+
+<script>
+const SCENES = ['s01','s02','s03','s04','s05','s06','s07','s08','s09','s10','s11','s12','s13','s14','s15','s16','s17'];
+
+// Duration per scene (ms)
+const DURATIONS = [
+  3500,  // 01 logo
+  4000,  // 02 india
+  5000,  // 03 stats
+  2500,  // 04 "and for the first time"
+  4000,  // 05 tools/team/ambition
+  4000,  // 06 editorial 3.0
+  6000,  // 07 evolution pills
+  3000,  // 08 we will remain curators
+  3000,  // 09 of culture
+  3000,  // 10 not playlists
+  5000,  // 11 spot shape show scale
+  5500,  // 12 playlist IPs
+  6000,  // 13 language stats
+  6500,  // 14 five projects
+  4000,  // 15 by 2028
+  5000,  // 16 what breaks/scales/travels
+  9999999 // 17 end card (stays until replay)
+];
+
+let current = 0;
+let paused = false;
+let timer = null;
+let progressTimer = null;
+let progressStart = null;
+let progressDuration = 0;
+
+function startReel() {
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('controls').classList.add('visible');
+  document.getElementById('sceneCounter').classList.add('visible');
+  showScene(0);
+}
+
+function showScene(idx) {
+  if (idx < 0 || idx >= SCENES.length) return;
+
+  // Hide all
+  SCENES.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active');
+  });
+
+  current = idx;
+  const el = document.getElementById(SCENES[current]);
+  el.classList.add('active');
+
+  // Update counter
+  document.getElementById('sceneCounter').textContent = `${current + 1} / ${SCENES.length}`;
+
+  // Update pause button
+  document.getElementById('btnPause').textContent = paused ? '▶' : '⏸';
+
+  // Trigger lang bar fills on scene 13
+  if (SCENES[current] === 's13') {
+    setTimeout(() => {
+      document.querySelectorAll('.lang-row-fill').forEach(b => {
+        b.style.width = b.style.getPropertyValue('--w') || b.getAttribute('style').match(/--w:([^;]+)/)?.[1] || '0%';
+      });
+    }, 600);
+  }
+
+  // Schedule next
+  clearTimeout(timer);
+  clearInterval(progressTimer);
+
+  if (!paused && current < SCENES.length - 1) {
+    scheduleNext(DURATIONS[current]);
+  }
+
+  // Progress bar
+  if (current < SCENES.length - 1) {
+    animateProgress(DURATIONS[current]);
+  } else {
+    document.getElementById('progressFill').style.width = '100%';
+  }
+}
+
+function scheduleNext(duration) {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    if (!paused) showScene(current + 1);
+  }, duration);
+}
+
+function animateProgress(duration) {
+  clearInterval(progressTimer);
+  const fill = document.getElementById('progressFill');
+  const totalSceneDuration = DURATIONS.slice(0, SCENES.length - 1).reduce((a,b) => a+b, 0);
+  const start = DURATIONS.slice(0, current).reduce((a,b) => a+b, 0);
+
+  progressStart = Date.now();
+  progressDuration = duration;
+
+  progressTimer = setInterval(() => {
+    if (paused) return;
+    const elapsed = Date.now() - progressStart;
+    const sceneProgress = Math.min(elapsed / duration, 1);
+    const overallProgress = ((start + elapsed) / totalSceneDuration) * 100;
+    fill.style.width = Math.min(overallProgress, 100) + '%';
+    if (sceneProgress >= 1) clearInterval(progressTimer);
+  }, 50);
+}
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btnPause').textContent = paused ? '▶' : '⏸';
+  if (!paused) {
+    scheduleNext(Math.max(DURATIONS[current] - (Date.now() - progressStart), 800));
+  } else {
+    clearTimeout(timer);
+  }
+}
+
+function nextScene() {
+  clearTimeout(timer);
+  clearInterval(progressTimer);
+  if (current < SCENES.length - 1) showScene(current + 1);
+}
+
+function prevScene() {
+  clearTimeout(timer);
+  clearInterval(progressTimer);
+  if (current > 0) showScene(current - 1);
+}
+
+function replayReel() {
+  paused = false;
+  showScene(0);
+}
+
+// Keyboard controls
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextScene(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevScene(); }
+  if (e.key === 'p' || e.key === 'P') togglePause();
+});
+</script>
+</body>
+</html>
