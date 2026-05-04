@@ -602,9 +602,9 @@ body.edit-mode .edit-bar{display:flex}
     <div class="vinyl-player">
       <div class="vp-disc idle" id="vinylDisc">
         <div class="vp-label">
-          <div class="vp-label-side">— Side A · Track 01 —</div>
+          <div class="vp-label-side">— Now Playing —</div>
           <div class="vp-label-title">India Editorial Vision</div>
-          <div class="vp-label-track">Dhurandhar<br>Title Track</div>
+          <div class="vp-label-track">A Spotify<br>Album · 2026</div>
           <div class="vp-label-cat">IE · 2026 · 03</div>
         </div>
       </div>
@@ -1120,8 +1120,8 @@ setTimeout(() => {
 // ── Spotify iframe API — vinyl player ──
 let embedController = null;
 let hasAttemptedAutoplay = false;
-const TRACK_URI = 'spotify:track:1ifI8ipBJreNmLDYigFc6d'; // Dhurandhar title track
-const START_AT = 35; // seconds
+const TRACK_URI = 'spotify:album:41jk5cLUgG35qFcUGPVtoA'; // India Editorial album selection
+const START_AT = 35; // seconds — drops into the first track at 0:35
 
 const vinylDisc = document.getElementById('vinylDisc');
 const vpStatus = document.getElementById('vpStatus');
@@ -1159,7 +1159,7 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
       const { isPaused, position, duration } = e.data;
       if (!isPaused) {
         setDisc('playing');
-        setStatus('playing', 'Now playing · Dhurandhar (Hanumankind)');
+        setStatus('playing', 'Now playing · India Editorial Vision');
       } else if (position && position > 0) {
         setDisc('idle');
         setStatus('idle', 'Paused · Tap vinyl to resume');
