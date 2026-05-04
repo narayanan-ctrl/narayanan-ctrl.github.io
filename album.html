@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Curators of Culture, Not Playlists — A Record</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -102,33 +103,115 @@ a{color:inherit;text-decoration:none}
 }
 .cover-byline::before{content:'';width:24px;height:1px;background:rgba(240,232,216,.7)}
 
-/* Vinyl badge in corner */
-.vinyl-badge{
-  position:absolute;right:0;bottom:0;
-  width:160px;height:160px;border-radius:50%;
-  background:radial-gradient(circle at 40% 40%,#1a0e1f 0%,#0a050d 80%);
-  box-shadow:0 12px 30px rgba(0,0,0,.4);
+/* ── VINYL PLAYER (top-right of cover) ── */
+.vinyl-player{
+  position:absolute;top:32px;right:64px;z-index:5;
+  width:280px;height:280px;
   display:flex;align-items:center;justify-content:center;
-  animation:spin 28s linear infinite;
-  border:1px solid rgba(240,232,216,.1);
 }
-.vinyl-badge::before{
+.vp-disc{
+  position:relative;width:100%;height:100%;border-radius:50%;
+  background:radial-gradient(circle at 38% 38%,#1a0e1f 0%,#0a050d 78%,#000 100%);
+  box-shadow:0 20px 50px rgba(0,0,0,.55),inset 0 2px 12px rgba(255,255,255,.05);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(240,232,216,.08);
+  cursor:pointer;
+  transition:transform .25s ease;
+}
+.vp-disc:hover{transform:scale(1.025)}
+.vp-disc::before{
+  content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:repeating-radial-gradient(circle at center,transparent 0,transparent 5px,rgba(240,232,216,.028) 5px,rgba(240,232,216,.028) 6px);
+}
+.vp-disc.playing{animation:vinylSpin 5.2s linear infinite}
+@keyframes vinylSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.vp-disc.idle::after{
   content:'';position:absolute;inset:0;border-radius:50%;
-  background:repeating-radial-gradient(circle at center,transparent 0,transparent 4px,rgba(240,232,216,.025) 4px,rgba(240,232,216,.025) 5px);
+  box-shadow:0 0 0 0 rgba(240,196,75,.55);
+  animation:pulse 2.2s ease-out infinite;pointer-events:none;
 }
-.vinyl-badge-label{
-  width:48%;height:48%;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#1DB954,#0d5a2c);
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(240,196,75,.55)}
+  70%{box-shadow:0 0 0 22px rgba(240,196,75,0)}
+  100%{box-shadow:0 0 0 0 rgba(240,196,75,0)}
+}
+
+.vp-label{
+  width:54%;height:54%;border-radius:50%;
+  background:radial-gradient(circle at 32% 32%,#F0C04B 0%,#9C7A1F 78%);
   display:flex;align-items:center;justify-content:center;flex-direction:column;
-  color:#F0E8D8;text-align:center;position:relative;
+  color:#0F1419;text-align:center;position:relative;padding:14px;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.15);
 }
-.vinyl-badge-label::after{
-  content:'';position:absolute;width:9px;height:9px;border-radius:50%;background:#0a050d;
+.vp-label::after{
+  content:'';position:absolute;width:11px;height:11px;border-radius:50%;background:#0a050d;
+  box-shadow:0 0 0 3px rgba(15,20,25,.2);
 }
-.vinyl-badge-label-text{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:.2em;font-weight:600;text-transform:uppercase;opacity:.85;position:absolute;top:8px}
-.vinyl-badge-label-rpm{font-family:'Fraunces',serif;font-size:11px;font-style:italic;margin-top:14px;font-weight:500}
-.vinyl-badge-label-cat{font-family:'JetBrains Mono',monospace;font-size:6px;letter-spacing:.18em;opacity:.7;position:absolute;bottom:8px}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.vp-label-side{
+  font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.28em;
+  text-transform:uppercase;font-weight:700;opacity:.65;
+  position:absolute;top:14px;
+}
+.vp-label-title{
+  font-family:'Fraunces',serif;font-size:14px;font-weight:600;font-style:italic;
+  line-height:1.05;letter-spacing:-.01em;margin-top:14px;color:#0F1419;max-width:100%;
+}
+.vp-label-track{
+  font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.18em;
+  text-transform:uppercase;font-weight:600;opacity:.7;margin-top:10px;line-height:1.4;
+}
+.vp-label-cat{
+  font-family:'JetBrains Mono',monospace;font-size:6.5px;letter-spacing:.2em;
+  opacity:.6;font-weight:600;text-transform:uppercase;
+  position:absolute;bottom:14px;
+}
+
+/* Tonearm */
+.vp-arm{
+  position:absolute;top:-12px;right:8px;
+  width:120px;height:5px;
+  transform-origin:100% 50%;transform:rotate(28deg);
+  pointer-events:none;z-index:6;
+  transition:transform .8s cubic-bezier(.4,.2,.3,1);
+}
+.vp-arm::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:8px;height:24px;background:linear-gradient(180deg,#3A3F47,#0F1419);
+  border-radius:2px;
+}
+.vp-arm::after{
+  content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#5A5F67,#1a1d22);
+  border:1.5px solid rgba(240,232,216,.15);
+}
+.vp-arm-bar{
+  position:absolute;left:6px;right:18px;top:50%;height:3px;transform:translateY(-50%);
+  background:linear-gradient(90deg,#3A3F47,#1a1d22);border-radius:2px;
+}
+.vp-disc.playing ~ .vp-arm,.vp-disc.idle ~ .vp-arm{transform:rotate(36deg)}
+
+/* Status text below */
+.vp-status{
+  position:absolute;top:calc(100% + 12px);right:0;
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(240,232,216,.65);
+  display:flex;align-items:center;gap:8px;
+}
+.vp-status .dot{
+  width:7px;height:7px;border-radius:50%;background:rgba(240,232,216,.4);
+  display:inline-block;
+}
+.vp-status.playing .dot{background:var(--green);animation:dotPulse 1.6s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.vp-status.idle .dot{background:var(--gold-bright)}
+
+/* Hidden Spotify iframe */
+.spotify-host{
+  position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;
+  opacity:0;pointer-events:none;
+}
 
 .cover-bottom{
   display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;
@@ -513,14 +596,26 @@ body.edit-mode .edit-bar{display:flex}
       <div class="cover-sub">A record of what we believe, where we're going, the seven editors making it happen — and the tour to follow.</div>
       <div class="cover-byline">Unni Nambudripad · India Editorial Lead</div>
 
-      <div class="vinyl-badge">
-        <div class="vinyl-badge-label">
-          <div class="vinyl-badge-label-text">India Editorial</div>
-          <div class="vinyl-badge-label-rpm">33⅓ rpm</div>
-          <div class="vinyl-badge-label-cat">IE · 2026 · 03</div>
+    </div>
+
+    <!-- Vinyl player (top-right of cover) -->
+    <div class="vinyl-player">
+      <div class="vp-disc idle" id="vinylDisc">
+        <div class="vp-label">
+          <div class="vp-label-side">— Side A · Track 01 —</div>
+          <div class="vp-label-title">India Editorial Vision</div>
+          <div class="vp-label-track">Dhurandhar<br>Title Track</div>
+          <div class="vp-label-cat">IE · 2026 · 03</div>
         </div>
       </div>
+      <div class="vp-arm">
+        <div class="vp-arm-bar"></div>
+      </div>
+      <div class="vp-status idle" id="vpStatus"><span class="dot"></span><span id="vpStatusText">Tap to play · Auto-starts at 0:35</span></div>
     </div>
+
+    <!-- Hidden Spotify iframe host -->
+    <div id="spotify-host" class="spotify-host"></div>
 
     <div class="cover-bottom">
       <div><span class="strong">Side A</span><br>Conviction · The Plan</div>
@@ -1021,6 +1116,97 @@ setTimeout(() => {
     document.getElementById('editHint').classList.add('fade');
   }
 }, 6000);
+
+// ── Spotify iframe API — vinyl player ──
+let embedController = null;
+let hasAttemptedAutoplay = false;
+const TRACK_URI = 'spotify:track:1ifI8ipBJreNmLDYigFc6d'; // Dhurandhar title track
+const START_AT = 35; // seconds
+
+const vinylDisc = document.getElementById('vinylDisc');
+const vpStatus = document.getElementById('vpStatus');
+const vpStatusText = document.getElementById('vpStatusText');
+
+function setStatus(state, text) {
+  vpStatus.classList.remove('idle','playing');
+  vpStatus.classList.add(state);
+  if (text) vpStatusText.textContent = text;
+}
+
+function setDisc(state) {
+  vinylDisc.classList.remove('idle','playing');
+  vinylDisc.classList.add(state);
+}
+
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+  const element = document.getElementById('spotify-host');
+  const options = {
+    uri: TRACK_URI,
+    width: 1,
+    height: 1
+  };
+  IFrameAPI.createController(element, options, (controller) => {
+    embedController = controller;
+
+    controller.addListener('ready', () => {
+      setStatus('idle', 'Tap to play · Auto-starts at 0:35');
+      // Try silent autoplay (will likely be blocked on first load)
+      tryAutoplay();
+    });
+
+    controller.addListener('playback_update', (e) => {
+      if (!e || !e.data) return;
+      const { isPaused, position, duration } = e.data;
+      if (!isPaused) {
+        setDisc('playing');
+        setStatus('playing', 'Now playing · Dhurandhar (Hanumankind)');
+      } else if (position && position > 0) {
+        setDisc('idle');
+        setStatus('idle', 'Paused · Tap vinyl to resume');
+      }
+    });
+  });
+};
+
+function tryAutoplay() {
+  if (!embedController || hasAttemptedAutoplay) return;
+  hasAttemptedAutoplay = true;
+  try {
+    embedController.seek(START_AT);
+    setTimeout(() => {
+      embedController.play();
+    }, 200);
+  } catch (err) {
+    console.log('Autoplay attempt failed:', err);
+  }
+}
+
+// Click vinyl to play / toggle
+vinylDisc.addEventListener('click', () => {
+  if (!embedController) return;
+  if (!hasAttemptedAutoplay) {
+    hasAttemptedAutoplay = true;
+    embedController.seek(START_AT);
+    setTimeout(() => embedController.play(), 150);
+  } else {
+    embedController.togglePlay();
+  }
+});
+
+// First user interaction anywhere on the page = trigger play
+let firstUserInteraction = false;
+function onFirstInteraction() {
+  if (firstUserInteraction || !embedController) return;
+  firstUserInteraction = true;
+  if (!hasAttemptedAutoplay) {
+    hasAttemptedAutoplay = true;
+    embedController.seek(START_AT);
+    setTimeout(() => embedController.play(), 150);
+  }
+}
+document.addEventListener('click', onFirstInteraction, { once: false });
+document.addEventListener('keydown', onFirstInteraction, { once: false });
+document.addEventListener('scroll', onFirstInteraction, { once: false, passive: true });
 </script>
 </body>
 </html>
