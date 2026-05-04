@@ -360,17 +360,22 @@ a{color:inherit;text-decoration:none}
 .vision-card-body{font-size:14px;color:var(--ink-soft);line-height:1.65;max-width:280px}
 
 /* ── ECOSYSTEM GRID ── */
-.eco-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin:24px 0 48px}
-.eco-cell{background:var(--paper);padding:32px 28px}
+.eco-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:24px 0 48px}
+.eco-cell{background:var(--paper);padding:28px 22px}
 .eco-cell-kicker{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
-.eco-cell-headline{font-family:'Fraunces',serif;font-size:24px;font-weight:600;line-height:1.18;color:var(--ink);margin-bottom:12px;letter-spacing:-.01em}
+.eco-cell-headline{font-family:'Fraunces',serif;font-size:26px;font-weight:600;line-height:1.1;color:var(--ink);margin-bottom:12px;letter-spacing:-.015em}
 .eco-cell-headline em{font-style:italic;color:var(--gold)}
-.eco-cell-body{font-size:14px;color:var(--ink-soft);line-height:1.65}
+.eco-cell-body{font-size:13.5px;color:var(--ink-soft);line-height:1.6}
 .eco-cell.spotlight{background:#0F1419;color:var(--paper)}
 .eco-cell.spotlight .eco-cell-kicker{color:rgba(240,232,216,.55)}
 .eco-cell.spotlight .eco-cell-headline{color:var(--paper)}
-.eco-cell.spotlight .eco-cell-body{color:rgba(240,232,216,.7)}
+.eco-cell.spotlight .eco-cell-body{color:rgba(240,232,216,.72)}
 .eco-cell.spotlight .eco-cell-headline em{color:var(--gold-bright)}
+.eco-cell.outlier{background:#5B0E2D;color:var(--paper)}
+.eco-cell.outlier .eco-cell-kicker{color:rgba(240,232,216,.65)}
+.eco-cell.outlier .eco-cell-headline{color:var(--paper)}
+.eco-cell.outlier .eco-cell-body{color:rgba(240,232,216,.78)}
+.eco-cell.outlier .eco-cell-headline em{color:var(--gold-bright)}
 
 /* ── PYRAMID ── */
 .pyr-wrap{margin:32px 0 48px;padding:36px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
@@ -740,52 +745,68 @@ body.edit-mode .edit-bar{display:flex}
     <div class="eco-grid anim">
       <div class="eco-cell spotlight">
         <div class="eco-cell-kicker">The benchmark</div>
-        <div class="eco-cell-headline">Punjabi · at <em>maturity</em></div>
-        <div class="eco-cell-body">Flagship IP, 1.4M+ saves, diaspora reach. The arc has worked. Punjabi is the destination — every other ecosystem is on a path to get there.</div>
+        <div class="eco-cell-headline">Hindi</div>
+        <div class="eco-cell-body">The foundation of the platform. Most-streamed, most-listened catalogue. Hindi sets the bar every other ecosystem aims at.</div>
+      </div>
+      <div class="eco-cell outlier">
+        <div class="eco-cell-kicker">The outlier</div>
+        <div class="eco-cell-headline">Punjabi</div>
+        <div class="eco-cell-body">The exception that proves the thesis. Flagship IP, 1.4M+ saves, real diaspora reach. What's possible when an ecosystem is properly cultivated.</div>
       </div>
       <div class="eco-cell">
-        <div class="eco-cell-kicker">In motion</div>
-        <div class="eco-cell-headline">Hindi · Indie · Hip-Hop</div>
-        <div class="eco-cell-body">Strong flagships, growing IPs, deepening cultural narrative. Walking the path Punjabi already walked.</div>
+        <div class="eco-cell-kicker">Sub-cultures</div>
+        <div class="eco-cell-headline">Hip-Hop &amp; I-Pop</div>
+        <div class="eco-cell-body">Cultural movements grown under our editorial. Communities curated, not just served. Rap 91 and IPop Icons are the engines of independent discovery.</div>
       </div>
       <div class="eco-cell">
         <div class="eco-cell-kicker">Early bets</div>
-        <div class="eco-cell-headline">Haryanvi · Bhojpuri · Devotional</div>
-        <div class="eco-cell-body">Genres on the cusp of breakthrough. Editorial positions ahead of the moment, not behind it.</div>
+        <div class="eco-cell-headline">Haryanvi</div>
+        <div class="eco-cell-body">The 2026 wager. The genre the mainstream hasn't caught up to yet. Editorial places the bet ahead of the moment.</div>
       </div>
     </div>
 
-    <div class="pyr-wrap anim">
-      <div class="pyr-label">From Playback to Playfront — The Storytelling Pyramid</div>
-      <div class="pyramid">
-        <div class="pyr-tier top">
-          <div class="pyr-tier-label">Tier-0 Video Shows</div>
-          <div class="pyr-tier-sub">One pilot in Hindi, Punjabi & English</div>
-        </div>
-        <div class="pyr-tier mid">
-          <div class="pyr-tier-label">Editorial Watchfeeds — Text</div>
-          <div class="pyr-tier-sub">Top 5 languages + Radar, Equal</div>
-        </div>
-        <div class="pyr-tier bot">
-          <div class="pyr-tier-label">Playlist IPs — The Foundation</div>
-          <div class="pyr-tier-sub">Haryanvi, Catalogue, Classical, Devotional</div>
-        </div>
-      </div>
-    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin:48px 0 14px" class="anim">The Operating Model · SPOT · SHAPE · SHOW · SCALE</div>
 
-    <div class="shift-display anim">
-      <div class="shift-col">
-        <div class="shift-pct old">100%</div>
-        <div class="shift-desc">Today — full focus on playlist programming</div>
+    <div class="four-s anim">
+      <div class="s-cell">
+        <div class="s-letter">S</div>
+        <div class="s-name">Spot</div>
+        <div class="s-sub">Trend Intelligence</div>
+        <ul class="s-bullets">
+          <li>Spotting internal trends</li>
+          <li>Artist & song milestones</li>
+          <li>Discovery of new music</li>
+        </ul>
       </div>
-      <div class="shift-arrow">→</div>
-      <div class="shift-col">
-        <div class="shift-pct new1">70%</div>
-        <div class="shift-desc">Playlists — fewer surfaces, more meaning each</div>
+      <div class="s-cell">
+        <div class="s-letter">S</div>
+        <div class="s-name">Shape</div>
+        <div class="s-sub">On-Platform Power</div>
+        <ul class="s-bullets">
+          <li>On-platform curation</li>
+          <li>Playlist architecture</li>
+          <li>Language & genre IPs</li>
+        </ul>
       </div>
-      <div class="shift-col">
-        <div class="shift-pct new2">30%</div>
-        <div class="shift-desc">Cultural storytelling — watchfeeds, video, commentary</div>
+      <div class="s-cell">
+        <div class="s-letter">S</div>
+        <div class="s-name">Show</div>
+        <div class="s-sub">Cultural Visibility</div>
+        <ul class="s-bullets">
+          <li>Playlist covers as cultural markers</li>
+          <li>Watchfeeds + storytelling</li>
+          <li>Packaging trends externally</li>
+        </ul>
+      </div>
+      <div class="s-cell">
+        <div class="s-letter">S</div>
+        <div class="s-name">Scale</div>
+        <div class="s-sub">Cultural Ownership</div>
+        <ul class="s-bullets">
+          <li>Cultural moments via IPs</li>
+          <li>Ownership of genres</li>
+          <li>IRL events + community</li>
+        </ul>
       </div>
     </div>
 
@@ -885,48 +906,39 @@ body.edit-mode .edit-bar{display:flex}
       <div class="subsection-rule"></div>
     </div>
 
-    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin:8px 0 14px" class="anim">The Operating Model · SPOT · SHAPE · SHOW · SCALE</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin:8px 0 14px" class="anim">From Playback to Playfront · The Format Shift</div>
 
-    <div class="four-s anim">
-      <div class="s-cell">
-        <div class="s-letter">S</div>
-        <div class="s-name">Spot</div>
-        <div class="s-sub">Trend Intelligence</div>
-        <ul class="s-bullets">
-          <li>Spotting internal trends</li>
-          <li>Artist & song milestones</li>
-          <li>Discovery of new music</li>
-        </ul>
+    <div class="pyr-wrap anim">
+      <div class="pyr-label">The Storytelling Pyramid</div>
+      <div class="pyramid">
+        <div class="pyr-tier top">
+          <div class="pyr-tier-label">Tier-0 Video Shows</div>
+          <div class="pyr-tier-sub">One pilot in Hindi, Punjabi & English</div>
+        </div>
+        <div class="pyr-tier mid">
+          <div class="pyr-tier-label">Editorial Watchfeeds — Text</div>
+          <div class="pyr-tier-sub">Top 5 languages + Radar, Equal</div>
+        </div>
+        <div class="pyr-tier bot">
+          <div class="pyr-tier-label">Playlist IPs — The Foundation</div>
+          <div class="pyr-tier-sub">Haryanvi, Catalogue, Classical, Devotional</div>
+        </div>
       </div>
-      <div class="s-cell">
-        <div class="s-letter">S</div>
-        <div class="s-name">Shape</div>
-        <div class="s-sub">On-Platform Power</div>
-        <ul class="s-bullets">
-          <li>On-platform curation</li>
-          <li>Playlist architecture</li>
-          <li>Language & genre IPs</li>
-        </ul>
+    </div>
+
+    <div class="shift-display anim">
+      <div class="shift-col">
+        <div class="shift-pct old">100%</div>
+        <div class="shift-desc">Today — full focus on playlist programming</div>
       </div>
-      <div class="s-cell">
-        <div class="s-letter">S</div>
-        <div class="s-name">Show</div>
-        <div class="s-sub">Cultural Visibility</div>
-        <ul class="s-bullets">
-          <li>Playlist covers as cultural markers</li>
-          <li>Watchfeeds + storytelling</li>
-          <li>Packaging trends externally</li>
-        </ul>
+      <div class="shift-arrow">→</div>
+      <div class="shift-col">
+        <div class="shift-pct new1">70%</div>
+        <div class="shift-desc">Playlists — fewer surfaces, more meaning each</div>
       </div>
-      <div class="s-cell">
-        <div class="s-letter">S</div>
-        <div class="s-name">Scale</div>
-        <div class="s-sub">Cultural Ownership</div>
-        <ul class="s-bullets">
-          <li>Cultural moments via IPs</li>
-          <li>Ownership of genres</li>
-          <li>IRL events + community</li>
-        </ul>
+      <div class="shift-col">
+        <div class="shift-pct new2">30%</div>
+        <div class="shift-desc">Cultural storytelling — watchfeeds, video, commentary</div>
       </div>
     </div>
 
